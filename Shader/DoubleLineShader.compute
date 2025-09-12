@@ -1,0 +1,73 @@
+﻿// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel CSMain
+
+// Create a RenderTexture with enableRandomWrite flag and set it
+// with cs.SetTexture
+int width;
+int height;
+RWTexture2D<float4> Result;
+RWStructuredBuffer<float2> datas1;
+RWStructuredBuffer<float2> datas2;
+int dataCount;
+float  maxY;
+float4 line1Color;
+float4 line2Color;
+float4 backColor;
+float maxA;
+float minA;
+float left;
+float right;
+Texture2D<float4> background;
+SamplerState samplerbackground
+{
+    Filter = MIN_MAG_MIP_LINEAR;
+    AddressU = Wrap;
+    AddressV = Wrap;
+};
+
+[numthreads(8,8,1)]
+void CSMain (uint3 id : SV_DispatchThreadID)
+{
+    // TODO: insert actual code here!
+    float2 uv = float2(id.x/(float)width,id.y/(float)height);
+    //计算该uv处于哪个数据
+    float data_length = (1 - right - left)/(dataCount - 3 );
+   // int index = floor(uv.x/data_length);
+    int isMaxThanLeft = step(left,uv.x);
+    int isMaxThanCenter = step(data_length * (dataCount - 3)+left,uv.x);
+    int index = floor(clamp(uv.x - left,0,1)/data_length) + isMaxThanLeft *1 ;
+    index = min(index,dataCount - 2);
+    //计算该点在两个数据间的插值
+    //float t = (uv.x % data_length)/data_length;
+   // float t = isMaxThanLeft * (uv.x - left)%data_length /data_length+ (1 - isMaxThanLeft) * uv.x/clamp(left,0.0001,1);
+   float t;
+    if(index == 0)
+    {
+      t = uv.x/clamp(left,0.0001,1);
+    }else if (index>= dataCount - 2)
+    {
+    t = (uv.x - left - data_length *(dataCount - 3)) /clamp(right,0.0001,1);
+    }else
+    {
+   //  t =  (uv.x - left)%data_length /data_length;
+     t =  fmod(uv.x - left,data_length)/data_length;
+    }
+    //计算两个数据在该点的高度
+    float h1 = lerp(datas1[index].y,datas1[index+1].y,t)/maxY;
+    float h2 = lerp(datas2[index].y,datas2[index+1].y,t)/maxY;
+    //计算当前点的颜色
+    float minH =  min(h1,h2);
+    float maxH =max(h1,h2);
+    float greatValue1 = step(h1,uv.y);
+    float4 c = (1 - greatValue1) * line1Color + greatValue1 * line2Color;
+    float a = (1 - greatValue1) * lerp(maxA,minA,(h1 - uv.y)/h1) + greatValue1*lerp(maxA,minA,(h2 - uv.y)/(h2 - h1));
+    a  = a *(1 -  step(maxH,uv.y));
+    c.a = a;
+    float4 bc = background.SampleLevel(samplerbackground,uv,0);
+    c = c*bc;
+
+    float4 textColor = float4(1, 0,0,t);
+
+    //输出
+    Result[id.xy] = c;
+}

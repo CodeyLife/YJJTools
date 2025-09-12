@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 51dab635ec98b5e4ea2f1413978ecda8, type: 3}
+  m_Name: CameraSet
+  m_EditorClassIdentifier: 
+  rotateSpeed: 0.8
+  moveSpeed: 80
+  moveSmoothTime: 0.1
+  rotateDamping: 3
+  forwardDamping: 3
+  minHeigh: 1
+  minAngle: 1.5374281
+  minDistance: 10
+  focusTime: 2
+  focusDistance: 200
+  nearDistanceThreshold: 350

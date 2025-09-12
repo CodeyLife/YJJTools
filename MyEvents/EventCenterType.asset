@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aac28962204c8dc45a3474687dded1c3, type: 3}
+  m_Name: EventCenterType
+  m_EditorClassIdentifier: 
+  types:
+  - "\u878D\u5408\u611F\u77E5"
+  - "\u56ED\u533A\u5C55\u793A"
+  - "\u5E94\u6025\u6307\u6325"
+  - "\u5E95\u76D8\u5C55\u5F00\u65B9\u5F0F"

@@ -1,0 +1,916 @@
+fileFormatVersion: 2
+guid: 652f9002291e2514e9e6d4569cec7bcc
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 21300000
+    second: Swith_currentSelect
+  - first:
+      213: 21300002
+    second: Swith_notSelect
+  - first:
+      213: 21300004
+    second: Swith_Next
+  - first:
+      213: 21300006
+    second: Main_0_whitedot
+  - first:
+      213: 21300008
+    second: Main_0_sanJiaoIcon
+  - first:
+      213: 21300010
+    second: Main_0_blueFrameFill
+  - first:
+      213: 21300012
+    second: Main_0_blueFrameFill_bg
+  - first:
+      213: 21300014
+    second: Main_0_blueFrameFill_Head
+  - first:
+      213: 21300016
+    second: Main_0_P2_0_shengdao_bg
+  - first:
+      213: 21300018
+    second: Main_0_big_yellow_fill
+  - first:
+      213: 21300020
+    second: Main_0_big_blue_fill
+  - first:
+      213: 21300022
+    second: Main_0_big_blue_bg
+  - first:
+      213: 21300024
+    second: Main_0_big_yellow_bg
+  - first:
+      213: 21300026
+    second: Main_0_small_blue_fill
+  - first:
+      213: 21300028
+    second: Main_0_small_yellow_fill
+  - first:
+      213: 21300030
+    second: Main_0_small_blueYellow_bg
+  - first:
+      213: 21300032
+    second: Main_0_small_blueYellow_sanjiao
+  - first:
+      213: 21300034
+    second: Main_0_small_blueYellow_Select
+  - first:
+      213: 21300036
+    second: Main_0_river_Fill
+  - first:
+      213: 21300038
+    second: Main_0_river_bg
+  - first:
+      213: 21300040
+    second: Main_0_P2_0_guodao_fill
+  - first:
+      213: 21300042
+    second: Main_0_P2_0_guodao_bg
+  - first:
+      213: 21300044
+    second: Main_0_P2_0_guodao_head
+  - first:
+      213: 21300046
+    second: Main_0_P2_0_guodao_arrow
+  - first:
+      213: 21300048
+    second: Main_0_P2_0_shengdao_arrow
+  - first:
+      213: 21300050
+    second: Main_0_P2_0_shengdao_fill
+  - first:
+      213: 21300052
+    second: Main_0_2
+  - first:
+      213: 21300054
+    second: Main_0_P2_0_shengdao_head
+  - first:
+      213: 21300056
+    second: Main_0_p2_3_total
+  - first:
+      213: 21300058
+    second: Main_0_p2_4_0
+  - first:
+      213: 21300060
+    second: Main_0_p2_4_fill
+  - first:
+      213: 21300062
+    second: Main_0_p2_4_1
+  - first:
+      213: 21300064
+    second: Main_0_p2_4_2
+  - first:
+      213: 21300066
+    second: Main_0_p2_4_head
+  externalObjects: {}
+  serializedVersion: 11
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMasterTextureLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 0
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 1
+  platformSettings:
+  - serializedVersion: 3
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 1
+  - serializedVersion: 3
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 1
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Swith_currentSelect
+      rect:
+        serializedVersion: 2
+        x: 1483
+        y: 414
+        width: 25
+        height: 25
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 234276b6836626a40b2c1bbd8305570e
+      internalID: 21300000
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Swith_notSelect
+      rect:
+        serializedVersion: 2
+        x: 1484
+        y: 314
+        width: 20
+        height: 21
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2c29a19b20e392844a00ba6e68570aef
+      internalID: 21300002
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Swith_Next
+      rect:
+        serializedVersion: 2
+        x: 1483
+        y: 198
+        width: 34
+        height: 47
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b3d2c9d4bd3b19549b44aa661a098ef6
+      internalID: 21300004
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Main_0_whitedot
+      rect:
+        serializedVersion: 2
+        x: 1342
+        y: 351
+        width: 9
+        height: 9
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a52a0349bb8b29143910538ef2344590
+      internalID: 21300006
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Main_0_sanJiaoIcon
+      rect:
+        serializedVersion: 2
+        x: 1335
+        y: 389
+        width: 30
+        height: 35
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 658fa4471d8163143a538dd1afab41de
+      internalID: 21300008
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Main_0_blueFrameFill
+      rect:
+        serializedVersion: 2
+        x: 1226
+        y: 200
+        width: 20
+        height: 228
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 9, z: 0, w: 7}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6ab1d6fc6179abe45bba985cbfabca85
+      internalID: 21300010
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Main_0_blueFrameFill_bg
+      rect:
+        serializedVersion: 2
+        x: 1278
+        y: 200
+        width: 21
+        height: 228
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3d130f8ba817b794281af0f066da7eaa
+      internalID: 21300012
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Main_0_P2_0_shengdao_bg
+      rect:
+        serializedVersion: 2
+        x: 532
+        y: 47
+        width: 321
+        height: 20
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c621fa5d8e3de3d42a1753e8af05d812
+      internalID: 21300016
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Main_0_big_yellow_fill
+      rect:
+        serializedVersion: 2
+        x: 718
+        y: 327
+        width: 123
+        height: 123
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4cb021f1e9508524ca599a652b0b51c4
+      internalID: 21300018
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Main_0_big_blue_fill
+      rect:
+        serializedVersion: 2
+        x: 1044
+        y: 335
+        width: 110
+        height: 110
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3515cd6545fba944fb1c5d3ae243cc2e
+      internalID: 21300020
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Main_0_big_blue_bg
+      rect:
+        serializedVersion: 2
+        x: 898
+        y: 335
+        width: 110
+        height: 110
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ed5b1f8ad020d46479151396f5e4b64a
+      internalID: 21300022
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Main_0_big_yellow_bg
+      rect:
+        serializedVersion: 2
+        x: 549
+        y: 328
+        width: 123
+        height: 123
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c8485331e01bf9545be9c73a93fccf7f
+      internalID: 21300024
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Main_0_small_blue_fill
+      rect:
+        serializedVersion: 2
+        x: 396
+        y: 341
+        width: 96
+        height: 97
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 69f0e4dd4f3cb3b4189125c14cec4ebb
+      internalID: 21300026
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Main_0_small_yellow_fill
+      rect:
+        serializedVersion: 2
+        x: 264
+        y: 341
+        width: 96
+        height: 96
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 18dd18144fb5e484ab5168c577a8850e
+      internalID: 21300028
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Main_0_small_blueYellow_bg
+      rect:
+        serializedVersion: 2
+        x: 141
+        y: 341
+        width: 96
+        height: 96
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a6f0f054d1fdf2547a58a7a143526283
+      internalID: 21300030
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Main_0_small_blueYellow_sanjiao
+      rect:
+        serializedVersion: 2
+        x: 57
+        y: 398
+        width: 24
+        height: 24
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4f029d1ce7cf88146b2b3565f0d3dc58
+      internalID: 21300032
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Main_0_small_blueYellow_Select
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 349
+        width: 9
+        height: 7
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 05596a6bd8adca34d8bbb8b40d7b2c62
+      internalID: 21300034
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Main_0_river_Fill
+      rect:
+        serializedVersion: 2
+        x: 55
+        y: 247
+        width: 281
+        height: 33
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 20, y: 0, z: 19, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 385981257ea934f43929a7835117ed9f
+      internalID: 21300036
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Main_0_river_bg
+      rect:
+        serializedVersion: 2
+        x: 57
+        y: 172
+        width: 278
+        height: 31
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 82273eef230e4574d9c761f90548852d
+      internalID: 21300038
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Main_0_P2_0_guodao_fill
+      rect:
+        serializedVersion: 2
+        x: 55
+        y: 104
+        width: 322
+        height: 23
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 39cf7383f168b5f4abc3260e4676fec6
+      internalID: 21300040
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Main_0_P2_0_guodao_bg
+      rect:
+        serializedVersion: 2
+        x: 62
+        y: 46
+        width: 321
+        height: 21
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3960b1576ea78ad428a62f0366f06782
+      internalID: 21300042
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Main_0_P2_0_guodao_head
+      rect:
+        serializedVersion: 2
+        x: 377
+        y: 104
+        width: 7
+        height: 23
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bc8ac238283367c4985a69e15b9d64ab
+      internalID: 21300044
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Main_0_P2_0_guodao_arrow
+      rect:
+        serializedVersion: 2
+        x: 906
+        y: 67
+        width: 30
+        height: 35
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7ba0b7aaff72cfa48a4fb0ed401a55af
+      internalID: 21300046
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Main_0_P2_0_shengdao_arrow
+      rect:
+        serializedVersion: 2
+        x: 436
+        y: 67
+        width: 30
+        height: 35
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 018375293ae8e744b99610bace9e4b35
+      internalID: 21300048
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Main_0_P2_0_shengdao_fill
+      rect:
+        serializedVersion: 2
+        x: 531
+        y: 104
+        width: 324
+        height: 22
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 12, y: 0, z: 13, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9c060d2c2d36f584b8eebc353076b541
+      internalID: 21300050
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Main_0_2
+      rect:
+        serializedVersion: 2
+        x: 532
+        y: 47
+        width: 321
+        height: 20
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e450bafd3c82fea47959018e7aba89f4
+      internalID: 21300052
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Main_0_p2_3_total
+      rect:
+        serializedVersion: 2
+        x: 443
+        y: 228
+        width: 398
+        height: 10
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0c8c3a1e0fe9355418d4e2dc9833aa65
+      internalID: 21300056
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Main_0_p2_4_0
+      rect:
+        serializedVersion: 2
+        x: 983
+        y: 46
+        width: 526
+        height: 53
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e2cf6b413be15004daedb8f18fc44c6d
+      internalID: 21300058
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Main_0_p2_4_fill
+      rect:
+        serializedVersion: 2
+        x: 1006
+        y: 125
+        width: 479
+        height: 24
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 470130f4c3bfe2c4d905804869392ca1
+      internalID: 21300060
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Main_0_p2_4_1
+      rect:
+        serializedVersion: 2
+        x: 905
+        y: 219
+        width: 47
+        height: 30
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a073eb4aeb0ce344ea2070572cb1bb52
+      internalID: 21300062
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Main_0_p2_4_2
+      rect:
+        serializedVersion: 2
+        x: 986
+        y: 213
+        width: 11
+        height: 37
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 44d0ca04bc0ba444e8b495fcb8a836aa
+      internalID: 21300064
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Main_0_p2_4_head
+      rect:
+        serializedVersion: 2
+        x: 1050
+        y: 191
+        width: 11
+        height: 76
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: eac84e87bf73491449c8cb71d33d4aed
+      internalID: 21300066
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    physicsShape: []
+    bones: []
+    spriteID: 7db86fad11e70394ebedf308f746c7a7
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    nameFileIdTable:
+      Main_0_p2_4_fill: 21300060
+      Main_0_P2_0_shengdao_bg: 21300016
+      Main_0_small_blueYellow_Select: 21300034
+      Swith_currentSelect: 21300000
+      Main_0_blueFrameFill_bg: 21300012
+      Main_0_2: 21300052
+      Main_0_p2_4_1: 21300062
+      Main_0_small_blueYellow_bg: 21300030
+      Main_0_big_blue_fill: 21300020
+      Swith_notSelect: 21300002
+      Main_0_p2_4_head: 21300066
+      Main_0_small_blueYellow_sanjiao: 21300032
+      Main_0_P2_0_shengdao_arrow: 21300048
+      Main_0_river_Fill: 21300036
+      Main_0_big_blue_bg: 21300022
+      Main_0_sanJiaoIcon: 21300008
+      Main_0_P2_0_guodao_fill: 21300040
+      Main_0_P2_0_guodao_bg: 21300042
+      Main_0_river_bg: 21300038
+      Main_0_small_blue_fill: 21300026
+      Main_0_big_yellow_fill: 21300018
+      Main_0_P2_0_guodao_head: 21300044
+      Main_0_big_yellow_bg: 21300024
+      Swith_Next: 21300004
+      Main_0_p2_3_total: 21300056
+      Main_0_small_yellow_fill: 21300028
+      Main_0_P2_0_shengdao_fill: 21300050
+      Main_0_P2_0_guodao_arrow: 21300046
+      Main_0_whitedot: 21300006
+      Main_0_blueFrameFill: 21300010
+      Main_0_p2_4_0: 21300058
+      Main_0_p2_4_2: 21300064
+  spritePackingTag: 
+  pSDRemoveMatte: 0
+  pSDShowRemoveMatteOption: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

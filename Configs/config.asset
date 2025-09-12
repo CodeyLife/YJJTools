@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d4678d6fbfb9d1428761f56f45edfb4, type: 3}
+  m_Name: config
+  m_EditorClassIdentifier: 
+  autoSpriteList:
+  - Assets/Textures
+  - Assets/TexturesForNew
+  openDebug: 0
+  toolPath: "F:\\UnityProject\\\u5907\u4EFD"
+  textColor: {r: 0.96862745, g: 0.9764706, b: 1, a: 1}
+  warping: 0
+  textSize: 18
+  tmpFont: {fileID: 11400000, guid: c38b979db3e9265408bfb1f939cdff81, type: 2}
+  alignment: 514
+  font: {fileID: 12800000, guid: 5eb45d9f5fde0bc4e86eabd02f4eb418, type: 3}
+  textAligin: 3

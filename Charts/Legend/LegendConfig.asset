@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 22e154ba9d91af1489c0bb6ffac6393b, type: 3}
+  m_Name: LegendConfig
+  m_EditorClassIdentifier: 
+  legendTitle: "\u56FE\u4F8B"
+  showTitle: 0
+  colorBlockSize: {x: 18.9, y: 19.4}
+  colorTextSpacing: 21.49
+  fontSize: 16.9
+  textColor: {r: 1, g: 1, b: 1, a: 1}
+  font: {fileID: 11400000, guid: c38b979db3e9265408bfb1f939cdff81, type: 2}
+  direction: 0
+  maxItemsPerRow: 4
+  itemSize: {x: 102.11, y: 30}
+  spacing: {x: 50, y: 10}
+  margin: {x: 10, y: 10, z: 10, w: 10}
+  showBackground: 1
+  backgroundColor: {r: 0.11320752, g: 0.11320752, b: 0.11320752, a: 0.8}

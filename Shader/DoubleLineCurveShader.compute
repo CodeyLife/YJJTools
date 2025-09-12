@@ -1,0 +1,70 @@
+﻿// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel CSMain
+
+// Create a RenderTexture with enableRandomWrite flag and set it
+// with cs.SetTexture
+int width;
+int height;
+RWTexture2D<float4> Result;
+RWStructuredBuffer<float2> datas1;
+RWStructuredBuffer<float2> datas2;
+int dataCount;
+float  maxY;
+float4 line1Color;
+float4 line2Color;
+float4 backColor;
+float maxA;
+float minA;
+float left;
+float right;
+Texture2D<float4> background;
+SamplerState samplerbackground
+{
+    Filter = MIN_MAG_MIP_LINEAR;
+    AddressU = Wrap;
+    AddressV = Wrap;
+};
+
+[numthreads(8,8,1)]
+void CSMain (uint3 id : SV_DispatchThreadID)
+{
+    // TODO: insert actual code here!
+    float2 uv = float2(id.x/(float)width,id.y/(float)height);
+    //计算t值
+    float t = uv.x;
+      //曲线
+    int num = dataCount - 3;
+    int current = min(floor(t*num),num-1);
+    float u = t*num - current;
+
+    float2 a = datas1[current];
+    float2 b = datas1[current +1];
+    float2 c = datas1[current +2];
+    float2 d = datas1[current +3];
+    float2 pos = 0.5 * ((-a + 3 * b - 3 * c + d) * (u * u * u) + (2 * a - 5 * b + 4 * c - d) * (u * u) + (-a + c) * u + 2 * b);
+    //数据2
+      a = datas2[current];
+     b = datas2[current +1];
+     c = datas2[current +2];
+     d = datas2[current +3];
+    float2 pos2 = 0.5 * ((-a + 3 * b - 3 * c + d) * (u * u * u) + (2 * a - 5 * b + 4 * c - d) * (u * u) + (-a + c) * u + 2 * b);
+
+    //计算两个数据在该点的高度
+    float h1 = pos.y/maxY;
+    float h2 = pos2.y/maxY;
+    //计算当前点的颜色
+    float minH =  min(h1,h2);
+    float maxH =max(h1,h2);
+    float greatValue1 = step(h1,uv.y);
+    float4 result = (1 - greatValue1) * line1Color + greatValue1 * line2Color;
+    float alpha = (1 - greatValue1) * lerp(maxA,minA,(h1 - uv.y)/h1) + greatValue1*lerp(maxA,minA,(h2 - uv.y)/(h2 - h1));
+    alpha  = alpha *(1 -  step(maxH,uv.y));
+    result.a = alpha;
+    float4 bc = background.SampleLevel(samplerbackground,uv,0);
+    result = result*bc;
+
+    float4 textColor = float4(1, 0,0,t);
+
+    //输出
+    Result[id.xy] = result;
+}

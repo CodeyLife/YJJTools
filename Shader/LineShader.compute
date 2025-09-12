@@ -1,0 +1,89 @@
+﻿// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel CSMain
+
+// Create a RenderTexture with enableRandomWrite flag and set it
+// with cs.SetTexture
+int width;
+int height;
+RWTexture2D<float4> Result;
+RWStructuredBuffer<float2> datas;
+int dataCount;
+float lineWidth;
+float4 lineColor;
+float4 backColor;
+Texture2D<float4> background;
+SamplerState samplerbackground
+{
+    Filter = MIN_MAG_MIP_LINEAR;
+    AddressU = Wrap;
+    AddressV = Wrap;
+};
+
+[numthreads(8,8,1)]
+void CSMain (uint3 id : SV_DispatchThreadID)
+{
+    float4 end = lineColor;
+    // TODO: insert actual code here!
+    float2 uv = float2(id.x/(float)width,id.y/(float)height);
+    //计算该uv处于哪个数据
+    float data_length = 1.0/(dataCount-3);
+    int index = floor(uv.x/data_length)+1;
+    //计算该uv的Y轴高度
+    float t =( uv.x - (index-1)*data_length)/data_length; //计算插值
+
+    float Y = 0;
+    float4 color_back =  background.SampleLevel(samplerbackground,uv,0);
+
+    //当前点高度
+    Y = lerp(datas[index].y,datas[index+1].y,t);
+    float2 pos = float2(uv.x,Y);
+    //下一个点高度
+    float uvx2 = (id.x+1)/(float)width;
+   // index = floor(uv.x/data_length);
+  //  t = fmod(uvx2,data_length)/data_length;
+    t = (uvx2 - (index-1)*data_length)/data_length; //计算插值
+    float y2 =lerp(datas[index].y,datas[index+1].y,t);
+    float2 pos2 = float2(uvx2,y2);
+
+
+     float _cos = (pos2.x-pos.x)/distance(pos2,pos);
+     float verticalY = lineWidth/_cos;
+
+    if(uv.y>pos.y-verticalY)
+    {
+     end = lineColor;
+     float juli = uv.y - pos.y;
+     juli = clamp(juli,0,1);
+     juli = min(juli,distance(uv,pos2));
+     juli = smoothstep(0.01,0,juli);
+     end.a = juli;
+    }else
+    {
+
+     // float a = lerp(0,0.5,1-(pos.y - uv.y)/pos.y);
+     // end *= color_back;
+     //end.a = a;
+
+
+     end = lineColor;
+    float juli =pos.y - verticalY - uv.y;
+    juli = clamp(juli,0,1);
+    juli = smoothstep(0.01,0,juli);
+    end.a = juli;
+
+
+    //背景
+    float isLess = step(0.5,juli);
+      float a = lerp(0,0.5,1-(pos.y - uv.y)/pos.y);
+      end = end * isLess + color_back*backColor*(1-isLess);
+      end.a = end.a*isLess + a*(1-isLess);
+    }
+    //测试
+    // t =(uv.x - (index-1)*data_length)/data_length; //计算插值
+    //end = float4(t,0,0,1);
+    //if(t <= 0.1){
+    //end.a = 0;
+    //}
+    //输出
+    Result[id.xy] = end;
+}

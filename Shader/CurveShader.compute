@@ -1,0 +1,97 @@
+﻿// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel CSMain
+
+// Create a RenderTexture with enableRandomWrite flag and set it
+// with cs.SetTexture
+int width;
+int height;
+RWTexture2D<float4> Result;
+RWStructuredBuffer<float2> datas;
+int dataCount;
+float lineWidth;
+float4 lineColor;
+float4 backColor;
+Texture2D<float4> background;
+SamplerState samplerbackground
+{
+    Filter = MIN_MAG_MIP_LINEAR;
+    AddressU = Wrap;
+    AddressV = Wrap;
+};
+
+[numthreads(8,8,1)]
+void CSMain (uint3 id : SV_DispatchThreadID)
+{
+    float4 end = lineColor;
+    // TODO: insert actual code here!
+    float2 uv = float2(id.x/(float)width,id.y/(float)height);
+    //计算该uv处于哪个数据
+    //float data_length = 1.0/(dataCount-2);
+    //int index = floor(uv.x/data_length);
+    //计算该uv的Y轴高度
+    float t = uv.x/1; //计算插值
+    float Y = 0;
+    float4 color_back =  background.SampleLevel(samplerbackground,uv,0);
+   // float ccc =  min(uv.x,uv.y);
+    //曲线
+    int num = dataCount - 3;
+    int current = min(floor(t*num),num-1);
+    float u = t*num - current;
+
+    float2 a = datas[current];
+    float2 b = datas[current +1];
+    float2 c = datas[current +2];
+    float2 d = datas[current +3];
+    float2 pos = 0.5 * ((-a + 3 * b - 3 * c + d) * (u * u * u) + (2 * a - 5 * b + 4 * c - d) * (u * u) + (-a + c) * u + 2 * b);
+    //pos.x = uv.x;
+    Y = pos.y;
+    //计算下一个点的位置
+    t = ((id.x+1)/(float)width)/1;
+    current = min(floor(t*num),num-1);
+     u = t*num - current;
+
+     a = datas[current];
+     b = datas[current +1];
+     c = datas[current +2];
+     d = datas[current +3];
+     float2 pos2 = 0.5 * ((-a + 3 * b - 3 * c + d) * (u * u * u) + (2 * a - 5 * b + 4 * c - d) * (u * u) + (-a + c) * u + 2 * b);
+    // pos2.x = t;
+
+
+     float _cos = (pos2.x-pos.x)/distance(pos2,pos);
+     float verticalY = lineWidth/_cos;
+
+    if(uv.y>pos.y-verticalY)
+    {
+     end = lineColor;
+     float juli = uv.y - pos.y;
+     juli = clamp(juli,0,1);
+     juli = min(juli,distance(uv,pos2));
+     juli = smoothstep(0.01,0,juli);
+     end.a = juli;
+    }else
+    {
+
+     // float a = lerp(0,0.5,1-(pos.y - uv.y)/pos.y);
+     // end *= color_back;
+     //end.a = a;
+
+
+     end = lineColor;
+    float juli =pos.y - verticalY - uv.y;
+    juli = clamp(juli,0,1);
+    juli = smoothstep(0.01,0,juli);
+    end.a = juli;
+
+
+    //背景
+    float isLess = step(0.5,juli);
+      float a = lerp(0,0.5,1-(pos.y - uv.y)/pos.y);
+      end = end * isLess + color_back*backColor*(1-isLess);
+      end.a = end.a*isLess + a*(1-isLess);
+    }
+
+
+    //输出
+    Result[id.xy] = end;
+}
