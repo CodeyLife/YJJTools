@@ -6,6 +6,10 @@ Shader "Unlit/Button3DShader_SSS_BRDF"
         _Diffuse ("Albedo (Diffuse Color + Alpha)", Color) = (0.7, 0.2, 0.2, 1) // 漫反射色=Albedo，Alpha控制整体透明度
         _SSSSamples ("SSS Sample Count (采样次数)", Range(3, 16)) = 5
         _SSSColor ("SSS Tint (散射色调)", Color) = (1.0, 0.8, 0.6, 1.0)
+        _SSSRadius ("SSS Radius (散射半径)", Range(0.01, 0.5)) = 0.1
+        _SSSStrength ("SSS Strength (散射强度)", Range(0.0, 3.0)) = 1.0
+        _SSSAttenuation ("SSS Attenuation (散射衰减)", Range(0.1, 5.0)) = 2.0
+        _SSSMode ("SSS Mode (散射模式)", Range(0, 3)) = 2
         _Roughness ("Roughness (粗糙度)", Range(0.01, 0.99)) = 0.3 // BRDF粗糙度（越小越光滑）
         _Metallic ("Metallic (金属度)", Range(0.0, 1.0)) = 0.0 // BRDF金属度（1=金属，0=非金属）
         
@@ -46,6 +50,8 @@ Shader "Unlit/Button3DShader_SSS_BRDF"
             int _SSSSamples;
             float _SSSStrength;
             float4 _SSSColor;
+            float _SSSAttenuation;
+            float _SSSMode;
             float _Roughness;
             float _Metallic;
             vector _BoxSize;
@@ -114,29 +120,32 @@ Shader "Unlit/Button3DShader_SSS_BRDF"
                   return float(n) / float(0x7fffffffU);
                   }
 
-            // -------------------------- 3. SSS 计算（伪次表面散射） --------------------------
-            // 沿光源方向采样，计算散射强度（简化Poisson风格，兼顾性能）
+            // -------------------------- 3. SSS 计算（改进的次表面散射） --------------------------
+            // 沿光源方向采样，计算散射强度（改进的Poisson风格，更真实的散射效果）
             float sssCalculation(float3 p, float3 normal, float3 lightDir) {
                 float sss = 0.0;
                 float3 sampleDir = normalize(lightDir); // 沿光源方向向内采样（模拟光线穿透）
-                float3 startP = p - normal * 0.005; // 从表面向内偏移，避免采样表面
+                float3 startP = p - normal * 0.01; // 从表面向内偏移，避免采样表面
                 
                 for (int i = 0; i < _SSSSamples; i++) {
-                    // 随机采样距离（递增+抖动，减少带状噪点）
-                    float rnd = frac(sin(dot(float2(i, i) + _Time.x, float2(12.9898, 78.233))) * 43758.5453);
-                     //float rnd = hash31(p + float(i))*.1;
-  
-                    float d = float(i)*0.05 *(1+rnd);
+                    // 改进的随机采样距离（使用更好的噪声函数）
+                    float rnd = hash31(p + float(i) + _Time.x * 0.1);
+                    float d = float(i) * _SSSRadius * (1.0 + rnd * 0.5);
                     float3 sampleP = startP + sampleDir * d;
                     
                     float distToSurface = sceneSDF(sampleP);
-
-                    sss += clamp(distToSurface/d,0,1.0);
-
-                  
+                    
+                    // 距离权重（距离越远权重越低）
+                    float weight = 1.0 - (float(i) / float(_SSSSamples));
+                    weight = pow(weight, _SSSAttenuation); // 可调节的衰减曲线
+                    
+                    // 散射强度计算（改进的公式）
+                    float scatter = clamp(distToSurface / (d + 0.001), 0.0, 1.0);
+                    sss += scatter * weight;
                 }
+                
                 // 归一化+强度控制，确保散射值在0~1
-                sss = smoothstep(0.0, 1.0, sss / float(_SSSSamples) * _SSSStrength);
+                sss = smoothstep(0.0, 1.0, sss / float(_SSSSamples) * _SSSStrength * 2.0);
                 return sss;
             }
 
@@ -144,20 +153,28 @@ Shader "Unlit/Button3DShader_SSS_BRDF"
             {
                         const int sN = _SSSSamples;  // 采样次数（平衡效果与性能）
                         float sss = 0.;     // SSS累积值
+                        float weightSum = 0.0;
                         
                         // 从表面向光线方向随机步进，累积加权值
-                        for (int i = 0; i<sN; i++){
-                            // 随机递增的采样距离（加入随机抖动避免条纹）
-                            float rnd = hash31(ro + float(i))*.1;
-                            float d = float(i)*ra*(1. + rnd); 
-                            // 累积加权采样值（距离越远权重越低）
-                            sss += clamp(sceneSDF(ro + rd*d)/d, 0., 1.);
+                        for (int i = 0; i < sN; i++){
+                            // 改进的随机递增采样距离
+                            float rnd = hash31(ro + float(i) + _Time.x * 0.05) * 0.3;
+                            float d = float(i) * ra * (1.0 + rnd); 
+                            
+                            // 距离权重（距离越远权重越低）
+                            float weight = 1.0 - (float(i) / float(sN));
+                            weight = pow(weight, _SSSAttenuation); // 可调节的衰减曲线
+                            
+                            // 累积加权采样值
+                            float sampleValue = clamp(sceneSDF(ro + rd * d) / (d + 0.001), 0.0, 1.0);
+                            sss += sampleValue * weight;
+                            weightSum += weight;
                         }
                         
-                        sss /= float(sN);  // 平均采样值（归一化）
+                        sss = weightSum > 0.0 ? sss / weightSum : 0.0;  // 加权平均
                         
                         // 用平滑步长函数调整分布，使其更接近钟形曲线
-                        return smoothstep(0., 1., sss); 
+                        return smoothstep(0.0, 1.0, sss * _SSSStrength); 
              }
              float3 hash33(float3 p)
              {
@@ -173,29 +190,87 @@ Shader "Unlit/Button3DShader_SSS_BRDF"
 
              float subsurface1(in float3 p, in float3 rd, float ra){
                float occ = 0.;     // 散射累积值
-               float i0 = hash31(p + rd)*ra;  // 初始随机偏移（避免采样同步）
+               float weightSum = 0.0;
+               float i0 = hash31(p + rd) * ra;  // 初始随机偏移（避免采样同步）
                
-               // 16次采样（更多采样减少噪声但降低性能）
-               for( int i = 0; i<16; i++){
+               // 使用可配置的采样次数
+               int sampleCount = min(_SSSSamples, 16);
+               for( int i = 0; i < sampleCount; i++){
                    // 采样距离（初始偏移+递增距离）
-                   float h = i0 + float(i)*ra;
+                   float h = i0 + float(i) * ra;
                    
-                   // 模式1：平滑散射（固定方向分布，噪声少）
-                   // vec3 dir = normalize(sin(float(i)*16.01 + vec3(0, 2.03, 4.02)));
+                   // 距离权重
+                   float weight = 1.0 - (float(i) / float(sampleCount));
+                   weight = pow(weight, _SSSAttenuation); // 可调节的衰减曲线
                    
-                   // 模式2：分散散射（随机方向，更真实但噪声多、性能消耗大）
-                   float v = h+float(i);
-                   float3 dir = normalize(hash33(p + float3(v,v,v))) - float3(0.5,0.5,0.5);
+                   // 改进的分散散射（随机方向，更真实）
+                   float v = h + float(i) + _Time.x * 0.1;
+                   float3 dir = normalize(hash33(p + float3(v, v, v))) - float3(0.5, 0.5, 0.5);
+                   
                    // 确保方向与光线方向一致（控制散射方向）
                    dir *= sign(dot(dir, rd));
+                   dir = normalize(dir);
                    
                    // 累积散射值（距离与场景距离的差值）
-                   occ += (h - sceneSDF(p - h*dir));
+                   float sampleValue = (h - sceneSDF(p - h * dir));
+                   occ += sampleValue * weight;
+                   weightSum += weight;
                }
                
                // 归一化并平滑处理，返回SSS强度
-               return smoothstep(0., 1., 1. - occ/4.);     
+               occ = weightSum > 0.0 ? occ / weightSum : 0.0;
+               return smoothstep(0.0, 1.0, 1.0 - occ / 3.0 * _SSSStrength);     
            }
+
+            // 高级SSS计算（基于物理的次表面散射）
+            float advancedSSS(float3 p, float3 normal, float3 lightDir) {
+                float3 sampleDir = normalize(lightDir);
+                float3 startP = p - normal * 0.02; // 从表面向内偏移
+                
+                float sss = 0.0;
+                float weightSum = 0.0;
+                
+                for (int i = 0; i < _SSSSamples; i++) {
+                    // 分层采样（模拟光线在材质中的传播）
+                    float layer = float(i) / float(_SSSSamples - 1);
+                    float rnd = hash31(p + float(i) + _Time.x * 0.05) * 0.4;
+                    
+                    // 采样距离（非线性分布，更符合物理）
+                    float d = _SSSRadius * (layer * layer + rnd * 0.3);
+                    float3 sampleP = startP + sampleDir * d;
+                    
+                    float distToSurface = sceneSDF(sampleP);
+                    
+                    // 物理衰减（指数衰减）
+                    float attenuation = exp(-d * _SSSAttenuation);
+                    
+                    // 散射强度（基于距离和衰减）
+                    float scatter = clamp(distToSurface / (d + 0.001), 0.0, 1.0);
+                    float weight = attenuation * (1.0 - layer);
+                    
+                    sss += scatter * weight;
+                    weightSum += weight;
+                }
+                
+                // 归一化并应用强度
+                sss = weightSum > 0.0 ? sss / weightSum : 0.0;
+                return smoothstep(0.0, 1.0, sss * _SSSStrength);
+            }
+
+            // SSS混合函数（根据模式选择不同的SSS算法）
+            float getSSS(float3 p, float3 normal, float3 lightDir) {
+                float mode = _SSSMode;
+                
+                if (mode < 1.0) {
+                    return sssCalculation(p, normal, lightDir);
+                } else if (mode < 2.0) {
+                    return subsurface(p - normal * 0.005, lightDir, _SSSRadius);
+                } else if (mode < 3.0) {
+                    return subsurface1(p, lightDir, _SSSRadius);
+                } else {
+                    return advancedSSS(p, normal, lightDir);
+                }
+            }
 
             // -------------------------- 4. Cook-Torrance BRDF（基于物理的光照） --------------------------
             // 1. 微表面分布（GGX模型：模拟粗糙表面的法线分布）
@@ -275,8 +350,7 @@ Shader "Unlit/Button3DShader_SSS_BRDF"
                 // 叠加SSS（仅受光面有效）
                 float NdotL1 = clamp(dot(N, L1), 0.0, 1.0);
                 if (NdotL1 > EPSILON) {
-                    float sss = subsurface(p - N * 0.005, L1, .05);
-                   // return float4(sss,sss,sss,1);
+                    float sss = getSSS(p, N, L1); // 使用可选择的SSS函数
                     totalColor += _SSSColor.rgb * sss * light1Intensity * (1.0 - _Metallic);
                 }
                 
