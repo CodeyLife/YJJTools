@@ -4,11 +4,11 @@
 YjjTool是一个功能丰富的Unity工具包，提供了多种UI组件、图表系统、相机控制、3D转2D UI等功能。所有组件都支持在编辑器中直接调整参数并实时预览效果，无需编写代码即可实现复杂的交互效果。
 
 ## 依赖
-TextMeshRro(可通过PackageManager导入)
 
-NewtonsoftJson(可通过PackageManager导入)
-
-Odin
+### 必需依赖
+- **TextMeshPro** - 可通过Package Manager导入
+- **Newtonsoft Json** - 可通过Package Manager导入
+- **Odin Inspector**
 ---
 
 ## 1. 3D转2D UI组件 (3DTo2DPointUI)
