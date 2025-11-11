@@ -21,9 +21,23 @@ public class ButtonGroup : MonoBehaviour
 
     public ButtonGroupContent Last { get => last; set
         {
-            if (last != null)
+            // 保存旧的按钮引用，避免在更新后丢失
+            var previousLast = last;
+            
+            // 先更新 last 的值，这样可以打破递归循环
+            // 当 Cancel() 中检查 buttonGroup.Last == this 时，已经是最新值了
+            last = value;
+            
+            if (previousLast != null)
             {
-                last.Cancel();
+                // 只有当切换到一个不同的新按钮时，才需要取消旧按钮
+                // 如果 value == null，说明是取消操作，不应该再调用 Cancel()，避免无限递归
+                // 如果 previousLast == value，说明是同一个按钮，不需要取消
+                if (previousLast != value && value != null)
+                {
+                    previousLast.Cancel();
+                }
+                
                 if(value == null)
                 {
                     ClearEvent?.Invoke();
@@ -35,8 +49,6 @@ public class ButtonGroup : MonoBehaviour
                     HaveButtonClickEvent?.Invoke();
                 }
             }
-
-            last = value;
         }
     }
 

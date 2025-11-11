@@ -279,7 +279,12 @@ public class ButtonGroupContent : MonoBehaviour, IPointerEnterHandler,IPointerEx
         }
         cancelEvent?.Invoke();
         stateEvent?.Invoke(false);
-        buttonGroup.Last = null;
+        // Only set Last to null if this button is still the current Last
+        // This prevents overwriting when switching to a different button
+        if (buttonGroup.Last == this)
+        {
+            buttonGroup.Last = null;
+        }
     }
 
     /// <summary>
