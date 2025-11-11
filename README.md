@@ -1,443 +1,221 @@
 # YjjTool 使用文档
 
 ## 概述
-YjjTool是一个功能丰富的Unity工具包，提供了多种UI组件、图表系统、相机控制、3D转2D UI等功能。所有组件都支持在编辑器中直接调整参数并实时预览效果，无需编写代码即可实现复杂的交互效果。
+
+YjjTool是一个功能丰富的Unity工具包，提供了多种UI组件、图表系统、相机控制、3D转2D UI等功能。**所有组件都支持在编辑器中直接调整参数并实时预览效果**，无需编写代码即可实现复杂的交互效果，大幅提升开发效率。
+
+---
 
 ## 依赖
 
 ### 必需依赖
 - **TextMeshPro** - 可通过Package Manager导入
 - **Newtonsoft Json** - 可通过Package Manager导入
-- **Odin Inspector**
+- **Odin Inspector** - 提供强大的编辑器增强功能
+
 ---
 
 ## 1. 3D转2D UI组件 (3DTo2DPointUI)
 
 ### PointUI 组件
-将3D世界中的物体位置映射到2D UI界面，支持动态跟随、缩放和动画效果。
 
-#### 主要参数：
+将3D世界中的物体位置实时映射到2D UI界面，实现3D场景与UI界面的无缝连接。
+![GitHub Logo](https://github.com/CodeyLife/Images/blob/main/pointUI.png?raw=true)
 
-**基础设置**
-- `scaleWithDistance` (bool): 根据距离缩放UI元素
-- `perfectDistance` (float): 完美距离，用于距离缩放计算
-- `point` (Transform): 3D场景中要跟踪的目标点
-- `offsets` (List<Vector2>): 偏移量列表，用于调整UI位置
 
-**绘制设置**
-- `drawLine` (bool): 是否绘制连接线
-- `width` (float): 线条宽度
-- `lineColor` (Color): 线条颜色
-- `aligin` (Aligin): 对齐方式
-  - 居左对齐
-  - 居右对齐  
-  - 居中对齐
-
-**内容控制**
-- `controllImage` (RectTransform): 要控制显示的UI内容
-- `imageOffsetIndex` (int): 内容基于第几个数据点偏移
-- `imageOffset` (Vector2): 内容偏移值
-- `autoLength` (bool): 自动计算横轴长度
-- `pointImage` (Image): 指向点的图片
-
-**动画设置**
-- `openAnimation` (bool): 开启动画
-- `animationTime` (float): 动画时间
+**核心特色：**
+- **动态跟随** - UI元素自动跟随3D物体位置变化，实时更新
+- **距离缩放** - 根据相机距离自动调整UI元素大小，保持视觉一致性
+- **连接线绘制** - 可选的连接线显示，清晰指示3D物体与UI的对应关系
+- **灵活对齐** - 支持左对齐、右对齐、居中对齐等多种对齐方式
+- **动画效果** - 支持平滑的显示/隐藏动画
 
 ### PointUILayerUpdater 组件
-自动管理多个PointUI的层级顺序，根据与相机的距离动态调整显示顺序。
 
-#### 主要参数：
+自动管理多个PointUI的层级顺序，根据与相机的距离动态调整显示顺序，确保近处的UI始终显示在远处UI的上方。
+
+**核心特色：**
 - 自动获取子物体中的所有PointUI组件
-- 根据相机位置自动排序
-- 支持相机移动事件监听
+- 根据相机位置实时排序
+- 支持相机移动事件监听，自动更新层级
 
 ---
 
 ## 2. 按钮功能组件 (ButtonFunction)
 
 ### SingleButtonFunction 组件
-增强的按钮功能，支持状态切换、悬停效果、二次确认等功能。
 
-#### 主要参数：
+增强的按钮功能组件，提供丰富的交互效果和状态管理能力。
 
-**基础功能**
-- `clickSprite` (Sprite): 点击时显示的图片
-- `needDoubleSure` (bool): 是否需要二次确认
-- `isClick` (bool, 只读): 当前是否按下状态
-
-**悬停效果**
-- `openHover` (bool): 开启悬停效果
-- `hoverTextColor` (Color): 悬停时文字颜色
-- `hoverSprite` (Sprite): 悬停时显示的图片
-
-**视觉变化**
-- `setNativesize` (bool): 改变sprite后设置为原大小
-- `changeTextColor` (bool): 改变文字颜色
-- `changeColor` (Color): 改变后的文字颜色
-- `changeSpriteColor` (bool): 改变sprite颜色
-- `spriteColor` (Color): 改变后的sprite颜色
-
-**初始化设置**
-- `firstIsClick` (bool): 初始是否为按下状态
-- `invokeEventAtStart` (bool): 初始化是否执行事件
-- `disable2Reset` (bool): 消失时切换初始状态
-- `enable2SetState` (bool): 重新显示时切回初始状态
-- `disable2UnClick` (bool): 隐藏时切换成未点击
-
-**显示控制**
-- `shows` (List<GameObject>): 打开时显示的对象列表
-- `hideShowsOnClose` (bool): 关闭时是否隐藏显示对象
-- `hides` (List<GameObject>): 打开时隐藏的对象列表
-- `showHidesOnClose` (bool): 关闭时是否显示隐藏对象
-
-**事件**
-- `ClickEvent` (UnityEvent): 点击事件
-- `CancelEvent` (UnityEvent): 取消事件
-- `StateEvent` (BoolEvent): 状态变化事件
-- `OnHoverChange` (UnityEvent<bool>): 悬停状态变化事件
+**核心特色：**
+- **状态切换** - 支持按钮的按下/释放状态切换，适用于开关类按钮
+- **悬停效果** - 丰富的悬停反馈，包括颜色变化、图片切换、缩放动画等
+- **二次确认** - 内置二次确认功能，防止误操作
+- **显示控制** - 按钮状态变化时可自动显示/隐藏相关UI元素
+- **事件系统** - 完善的事件回调系统，支持点击、取消、状态变化、悬停等事件
+- **初始化控制** - 灵活的初始状态设置和显示/隐藏时的状态管理
 
 ### DoubleSure 组件
-二次确认对话框系统。
 
-#### 主要参数：
-- `window` (GameObject): 确认窗口对象
-- `sureButton` (Button): 确认按钮
-- `cancelButton` (Button): 取消按钮
-- `msg` (TextMeshProUGUI): 提示信息文本
+二次确认对话框系统，为重要操作提供额外的安全保障。
+
+**核心特色：**
+- 可自定义确认窗口样式
+- 支持自定义提示信息
+- 提供确认和取消两个事件回调
 
 ### FocusAnimation 组件
-鼠标悬停时的缩放动画效果。
 
-#### 主要参数：
-- `target` (Transform): 动画目标（为空则为自己）
-- `animationTime` (float): 动画时间（秒）
-- `curve` (AnimationCurve): 动画曲线
-- `scaler` (Vector3): 缩放系数
+鼠标悬停时的缩放动画效果，增强交互反馈。
+
+**核心特色：**
+- 可自定义动画目标和缩放系数
+- 支持自定义动画曲线
+- 可设置动画时间
 
 ### ButtonGroup 组件
-按钮组管理，支持单选模式。
 
-#### 主要参数：
-- `supportCancel` (bool): 点击同一个按钮是否支持取消
-- `clearOnEnabel` (bool): enable时取消已点击的按钮
-- `clearOnDisabel` (bool): 按钮被隐藏时取消已点击的按钮
-- `HaveButtonClickEvent` (UnityEvent): 有按钮点击时的事件
-- `ClearEvent` (UnityEvent): 清除事件
+按钮组管理组件，支持单选模式，自动管理按钮之间的互斥关系。
+
+**核心特色：**
+- 支持单选模式，确保同时只有一个按钮被选中
+- 支持点击同一按钮取消选中
+- 提供按钮点击和清除事件
+- 支持按钮显示/隐藏时的自动状态管理
 
 ---
 
 ## 3. 相机控制器 (Camera)
 
 ### CameraController 组件
-功能强大的相机控制系统，支持多种输入方式和相机切换。
 
-#### 主要参数：
+功能强大的相机控制系统，支持多种输入方式和相机切换，适用于需要灵活控制相机视角的应用场景。
 
-**射线检测设置**
-- `rayType` (int): 射线类型
-  - 0: 相交公式计算
-  - 1: 射线检测
-- `ground` (Transform): 地面对象
-- `clampBox` (BoxCollider): 相机移动限制区域
-
-**缩放控制**
-- `openScale` (bool): 是否根据高度开启阻塞
-- `minMoveSpeed` (float): 最小移动速度
-
-**相机设置**
-- `set` (CameraSet): 相机控制属性
-- `beginCamera` (CameraInfo): 初始相机
-- `inputMoveSpeed` (float): 输入移动速度
-
-**状态信息**
-- `canMove` (bool, 只读): 是否可以移动
-- `currentFocus` (Transform, 只读): 当前焦点
+**核心特色：**
+- **多种输入方式** - 支持鼠标、键盘、触摸等多种输入方式
+- **平滑控制** - 相机移动和旋转采用平滑插值，提供流畅的视觉体验
+- **智能聚焦** - 自动聚焦到指定目标，支持平滑过渡和自定义聚焦距离
+- **区域限制** - 可设置相机移动范围，防止相机移动到无效区域
+- **高度自适应** - 根据相机高度自动调整移动速度，适应不同视角
+- **射线检测** - 支持多种射线检测方式（相交公式计算、物理射线检测），精确计算地面交互点
+- **阻尼控制** - 可调节旋转和前进的阻尼系数，实现不同的操作手感
 
 ### CameraSet 配置
-相机控制的具体参数设置。
 
-#### 主要参数：
-- `rotateSpeed` (float): 镜头旋转速度
-- `moveSpeed` (float): 镜头远近速度
-- `moveSmoothTime` (float): 移动平滑时间
-- `rotateDamping` (float): 旋转阻尼
-- `forwardDamping` (float): 前进阻尼
-- `minHeigh` (float): 与地面最低高度
-- `minAngle` (float): 镜头最低角度
-- `minDistance` (float): 镜头与地面最近距离
-- `focusTime` (float): 聚焦时间
-- `focusDistance` (float): 聚焦距离
-- `nearDistanceThreshold` (float): 镜头远近距离阈值
+相机控制的具体参数配置类，提供丰富的相机控制选项。
 
 ---
 
 ## 4. 图表系统 (Charts)
 
 ### 图表基础类 (ChartBase)
-所有图表的基类，提供通用的图表功能。
 
-#### 主要参数：
-- `setWithoutSetData` (bool): 没有读取数据时awake是否播放动画
+所有图表的基类，提供通用的图表功能和编辑器实时预览支持。
+
+**核心特色：**
+- 支持编辑器实时预览
+- 统一的动画播放接口
+- 自动处理组件启用/禁用时的状态
 
 ### 自由图表 (FreeChart)
-最灵活的图表组件，支持多种图表类型的组合。
 
-#### 主要参数：
+最灵活的图表组件，支持多种图表类型的组合，可以创建复杂的自定义图表。
 
-**基础设置**
-- `set` (BaseSet): 基础设置
-- `hoverSet` (HoverSet): 悬停设置
-- `HoverEvent` (IntEvent): 悬停事件
-- `HoverExitEvent` (IntEvent): 悬停退出事件
-- `GetHoverNameEvent` (stringEvent): 获取悬停名称事件
-
-**数据设置**
-- `dataSet` (DataSet): 数据标题设置
-- `datas` (List<MultipleData>): 数据列表
-- `charts` (List<DrawFreeChartBase>): 图表列表
-- `showUnit` (bool): 是否显示数据单位
-- `font` (TMP_FontAsset): 字体
-
-**动画设置**
-- `animationSet` (AnimationSet): 动画设置
+**核心特色：**
+- 支持在同一图表中组合多种图表类型
+- 丰富的悬停交互功能
+- 支持自定义悬停UI和事件回调
+- 灵活的数据和样式配置
 
 ### 3D柱状图 (Yjj_3dBarGraph)
-3D柱状图组件，支持多组数据对比。
 
-#### 主要参数：
+立体柱状图组件，支持多组数据对比，视觉效果更加直观。
 
-**基础设置**
-- `set` (BaseSet): 基础设置
-- `hoverSet` (HoverSet): 悬停设置
-- `barSet` (Yjj_3dBarDrawer.Bar3DSet): 3D柱状图设置
-
-**数据设置**
-- `dataSet` (DataSet): 数据标题设置
-- `datas` (List<MultipleData>): 数据列表
-- `barWidth` (float): 柱状图宽度
-- `distance` (float): 柱状图间距
-- `colorList` (List<Color>): 柱状图颜色列表
-
-**文本显示**
-- `openDataText` (bool): 开启数据文本
-- `showUnit` (bool): 显示单位
-- `textSize` (float): 文本大小
-- `textOffset` (Vector2): 文本偏移
-- `textEnd` (int): 保留几位小数
-- `textFont` (TMP_FontAsset): 文本字体
-- `textColor` (Color): 文本颜色
-
-**动画设置**
-- `animationSet` (AnimationSet): 动画设置
-- `openLoop` (bool): 是否开启循环动画
+**核心特色：**
+- 3D立体效果，增强视觉冲击力
+- 支持多组数据同时对比
+- 可显示数据文本标签
+- 支持循环动画效果
+- 丰富的悬停交互
 
 ### 饼图 (Yjj_PieChartNew)
+
 功能丰富的饼图组件，支持多种显示模式和动画效果。
 
-#### 主要参数：
-
-**基础数据**
-- `datas` (List<float>): 数据列表
-- `names` (List<string>): 名称列表
-- `colors` (List<Color>): 颜色列表
-
-**形状设置**
-- `distanceAngle` (float): 间隔角度
-- `width` (float): 宽度
-- `smooth` (int): 细分程度
-- `startAngle` (float): 起始角度
-- `roundRadiu` (float): 圆角半径
-- `radius` (float, 只读): 半径
-
-**背景设置**
-- `drawBackGround` (bool): 绘制底板
-- `backGroundSmooth` (int): 背景细分
-
-**交互设置**
-- `openHover` (bool): 开启悬停
-- `uicamera` (Camera): UI相机
-
-**画线设置**
-- `drawLine` (bool): 启用画线
-- `lineWidth` (float): 线条宽度
-- `lineColor` (Color): 线条颜色
-- `lineOffset` (Vector2): 线条偏移
-- `lineLength` (float): 线条长度
-- `textInCenter` (bool): 文本居中
-
-**文本设置**
-- `textType` (TitleType): 选择显示内容
-  - 不显示
-  - 显示数据
-  - 显示标题
-  - 显示标题和数据
-- `titleSize` (float): 标题大小
-- `titleColor` (Color): 标题颜色
-- `valueTextColorFollowSprite` (bool): 开启数据文本颜色跟随
-- `floatCount` (int): 数据小数位数
-- `textDistance` (float): 文本距离中心的距离
-- `text_color` (Color): 文本颜色
-- `dataColor` (Color): 数据颜色
-- `text_size` (float): 文本大小
-- `font` (TMP_FontAsset): 字体
-- `showUnit` (bool): 是否显示单位
-- `unit` (string): 单位
-
-**图例设置**
-- `enableLegend` (bool): 启用图例
-- `legendWithData` (bool): 图例里是否显示数据
-- `config` (Yjj_LegendConfig): 图例配置
-
-**动画设置**
-- `enableAnimation` (bool): 启用动画
-- `animationTime` (float): 动画时间
-- `animationType` (AnimationType): 动画类型
-  - Sequential: 顺序播放
-  - CenterOut: 从中心向外
-  - OutsideIn: 从外向内
-- `animationCurve` (AnimationCurve): 动画曲线
-- `staggerDelay` (float): 错开延迟
-- `openLoop` (bool): 开启循环
-- `loopScale` (float): 循环缩放
-- `loopSpaceTime` (float): 循环间隔时间
-- `loopCurve` (AnimationCurve): 循环曲线
-- `LoopEvent` (UnityEvent<int>): 循环事件
-- `fadeInTime` (float): 渐入时间
-- `fadeOutTime` (float): 渐出时间
+**核心特色：**
+- **多种动画类型** - 支持顺序播放、从中心向外、从外向内等多种动画类型
+- **循环动画** - 支持循环播放动画，可自定义循环缩放和间隔时间
+- **图例支持** - 内置图例功能，可显示数据标签
+- **灵活文本** - 支持显示标题、数据或两者结合，文本可跟随扇形颜色
+- **连接线** - 可选的连接线显示，连接扇形和文本标签
+- **圆角效果** - 支持扇形圆角，视觉效果更加柔和
+- **悬停交互** - 鼠标悬停时显示详细信息
 
 ### 水波图 (WaterChart)
-水波效果的数据展示组件。
 
-#### 主要参数：
+独特的水波效果数据展示组件，适用于进度、百分比等数据的可视化。
 
-**数据显示**
-- `data` (float): 当前数据值
-- `maxValue` (float): 最大值
-- `type` (ShowType): 显示类型
-  - 显示百分比
-  - 显示原始数据
-- `floatCount` (int): 文本保留小数位数
-
-**动画设置**
-- `fadeInTime` (float): 渐入动画时间
-
-**材质表现**
-- `speed` (float): 波浪运动速度
-- `am` (float): 振幅
-- `waterColor` (Color): 颜色
-- `lineColor` (Color): 边线颜色
-- `lineWidth` (float): 边线宽度
+**核心特色：**
+- 动态水波效果，视觉效果生动
+- 支持显示百分比或原始数据
+- 可自定义水波速度、振幅、颜色等参数
+- 支持渐入动画
 
 ### 热力图 (Yjj_HeatMap)
-基于3D位置数据的热力图生成组件。
 
-#### 主要参数：
+基于3D位置数据的热力图生成组件，适用于地理数据、密度分布等场景。
 
-**数据设置**
-- `pointsList` (List<Vector3>): 3D位置点列表
-- `dataList` (List<float>): 对应的数据值列表
-- `plane` (GameObject): 显示热力图的平面对象
-
-**渲染设置**
-- `damping` (float): 衰减系数
-- `dampingLevel` (int): 衰减随机系数
-- `minLength` (int): 最小辐射范围
-- `maxPercent` (float): 最大值映射
-- `curveRamap` (bool): 取颜色最大值进行映射
-- `ct` (ComputeType): 计算类型
-  - 像素直接相加
-  - 像素加权相加
-- `curve` (AnimationCurve): 颜色曲线
-
-**Excel读取**
-- `excelPath` (string): 数据表格位置
-- `readDataAtAwake` (bool): awake时是否读取excel
-- `dataIndex` (int): 数据所在excel位置
-
-**渲染参数**
-- `maxPix` (int): 图片最长的一边的像素
+**核心特色：**
+- **Excel数据读取** - 支持直接从Excel文件读取数据，简化数据导入流程
+- **3D位置映射** - 将3D空间中的位置点映射到2D热力图
+- **灵活渲染** - 支持多种计算类型（像素直接相加、加权相加）
+- **颜色映射** - 支持自定义颜色曲线，实现丰富的视觉效果
+- **衰减控制** - 可调节热力点的衰减系数和辐射范围
 
 ### 悬停设置 (HoverSet)
-图表悬停效果的配置类。
 
-#### 主要参数：
+图表悬停效果的统一配置类，为所有图表提供一致的悬停交互体验。
 
-**基础设置**
-- `active` (bool): 开启hover功能
-- `offset` (Vector2): 弹窗基于鼠标偏移
-
-**悬停效果**
-- `hoverScale` (float): hover时图表缩放系数
-- `hoverColor` (Color): hover改变颜色
-- `hoverRect` (RectTransform): hover时对应位置显示的垂直线
-
-**UI设置**
-- `uicamera` (Camera): UI相机
-- `root` (Transform): 弹窗根节点
-- `valueTextList` (List<TextMeshProUGUI>): 用于接收并显示数值的文本
-- `nameText` (TextMeshProUGUI): 用于显示标题的文本
+**核心特色：**
+- 统一的悬停效果配置
+- 支持悬停时图表缩放和颜色变化
+- 可自定义悬停弹窗UI
+- 支持显示垂直线指示当前数据点
 
 ---
 
 ## 5. 工具类组件
 
 ### YjjUtility 工具类
-提供各种实用的工具方法。
 
-#### 主要功能：
-- **动画系统**: FadeIn、FadeOut等动画方法
-- **延迟执行**: Delay、DelayWhile等延迟方法
-- **随机功能**: Probability概率判断
-- **调试工具**: InspectObject对象检查
-- **性能分析**: BeginSample、EndSample性能计时
-- **深度复制**: DeepCopyUsingBinarySerialization深度复制
+提供各种实用的工具方法，简化日常开发中的常见任务。
+
+**主要功能：**
+- **动画系统** - FadeIn、FadeOut等常用动画方法
+- **延迟执行** - Delay、DelayWhile等延迟执行工具
+- **随机功能** - Probability概率判断等随机工具
+- **调试工具** - InspectObject对象检查等调试辅助
+- **性能分析** - BeginSample、EndSample性能计时工具
+- **数据操作** - DeepCopyUsingBinarySerialization深度复制等数据处理方法
 
 ### MultipleData 数据类
-用于图表的多维数据结构。
 
-#### 主要参数：
-- `datas` (List<float>): 数据列表
-
-#### 主要方法：
-- `GetDatas()`: 静态方法，用于创建MultipleData列表
+用于图表的多维数据结构，提供便捷的数据创建方法。
 
 ---
 
 ## 6. 配置系统
 
 ### V2BaseSet 配置类
-图表V2版本的基础配置。
 
-#### 主要参数：
+图表V2版本的基础配置类，提供统一的图表样式和布局配置。
 
-**字体设置**
-- `font` (TMP_FontAsset): 字体资源
-
-**距离设置**
-- `distanceFromTop` (float): 与顶部距离
-- `distanceFromButtom` (float): 与底部距离
-
-**最大最小值设置**
-- `autoMax` (bool): 自动最大值
-- `max` (float): 手动设置最大值
-- `autoMin` (bool): 自动最小值
-- `min` (float): 手动设置最小值
-
-**布局设置**
-- `dataMinDistance` (float): 数据最小间隔像素
-- `useCenterPosition` (bool): 启用中心位置模式
-- `distanceFromLeft` (float): 与左边距离
-- `distanceFromRight` (float): 与右边距离
-- `colors` (List<Color>): 颜色列表
-
-**图例设置**
-- `seriesNames` (List<string>): 数据系列名称
-
-**动画参数**
-- `openAnimation` (bool): 开启动画
-- `fadeInTime` (float): 渐入时间
-- `curve` (AnimationCurve): 动画曲线
+**核心特色：**
+- 统一的字体、颜色、布局配置
+- 支持自动或手动设置最大最小值
+- 灵活的边距和间距设置
+- 支持数据系列名称配置
+- 统一的动画参数配置
 
 ---
 
@@ -445,25 +223,24 @@ YjjTool是一个功能丰富的Unity工具包，提供了多种UI组件、图表
 
 ### 基本使用流程
 1. 将相应的组件添加到GameObject上
-2. 在Inspector面板中调整参数
-3. 参数调整后会自动刷新效果
-4. 在运行时可以通过代码调用相关方法
+2. 在Inspector面板中调整参数（支持实时预览）
+3. 参数调整后会自动刷新效果，无需运行游戏即可查看
+4. 在运行时可以通过代码调用相关方法进行动态控制
 
 ### 注意事项
-- 大部分组件都支持在编辑器中实时预览
-- 图表组件需要正确设置数据才能正常显示
-- 相机控制器需要配合Cinemachine使用
-- 3D转2D UI需要正确设置相机引用
-- 悬停效果需要正确设置UI相机
+- **编辑器预览** - 大部分组件都支持在编辑器中实时预览，这是YjjTool的核心特色
+- **数据设置** - 图表组件需要正确设置数据才能正常显示
+- **相机引用** - 3D转2D UI和悬停效果需要正确设置相机引用
+- **依赖安装** - 确保已安装所有必需的依赖包
 
 ### 扩展功能
 - 所有组件都支持通过继承进行功能扩展
-- 事件系统支持自定义回调
+- 完善的事件系统支持自定义回调
 - 动画系统支持自定义曲线
 - 图表系统支持自定义绘制组件
 
 ---
 
 ## 版本信息
-- 当前版本: 基于Unity 2022.3 LTS
-- 兼容性: 支持PC、移动端、WebGL平台
+- **当前版本**: 基于Unity 2022.3 LTS
+- **兼容性**: 支持PC、移动端、WebGL平台
