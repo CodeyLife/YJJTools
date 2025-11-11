@@ -31,7 +31,10 @@ public class CameraController : MonoBehaviour
 
     
     CinemachineBrain _brain;
-    [HorizontalGroup("set")]
+    private Camera _mainCamera;
+    private EventSystem _eventSystem;
+    private int _groundLayer = -1;
+    [HorizontalGroup("set"), Required]
     [LabelText("相机控制属性")]
     public CameraSet set;
 #if UNITY_EDITOR
@@ -42,7 +45,7 @@ public class CameraController : MonoBehaviour
     }
 #endif
     public BoxCollider clampBox;
-    [Header("地面")]
+    [Header("地面"),Required]
     public Transform ground;
     public void SetGround(Transform ground)
     {
@@ -56,7 +59,7 @@ public class CameraController : MonoBehaviour
     public float minMoveSpeed = 0.1f;
 
 
-    [LabelText("初始相机")]
+    [LabelText("初始相机"), Required]
     public CameraInfo beginCamera;
     public float inputMoveSpeed = 1;
     public UnityEvent OnMove = new UnityEvent();
@@ -65,7 +68,7 @@ public class CameraController : MonoBehaviour
     public bool canMove = false;
     [ReadOnly]
     public Transform currentFocus;
-    protected Vector3 groudPostion { get => ground == null ? Vector3.zero : ground.position; }
+    protected Vector3 groundPosition { get => ground == null ? Vector3.zero : ground.position; }
 
     private void Awake()
     {
@@ -74,7 +77,10 @@ public class CameraController : MonoBehaviour
             Instance = this;
         }
 
-        // ChangeCinemachine(startInfo);
+        // 缓存组件引用
+        _mainCamera = Camera.main;
+        _eventSystem = EventSystem.current;
+        _groundLayer = LayerMask.NameToLayer("Ground");
     }
     private void Start()
     {
@@ -89,7 +95,8 @@ public class CameraController : MonoBehaviour
         {
             if (_brain == null)
             {
-                _brain = Camera.main.transform.GetOrAddComponent<CinemachineBrain>();
+                if (_mainCamera == null) _mainCamera = Camera.main;
+                _brain = _mainCamera.transform.GetOrAddComponent<CinemachineBrain>();
             }
             return _brain;
         }
@@ -119,126 +126,85 @@ public class CameraController : MonoBehaviour
     /// <returns></returns>
     public bool CheckSameInfo(CameraInfo info)
     {
-        if (info == CurrentInfo)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        return info == CurrentInfo;
     }
     public void ChangeCinemachine(CameraInfo info)
     {
-        if (focusCor != null)
-        {
-            StopCoroutine(focusCor);
-        }
-        if (!info.IsInit) info.Init();
-        //Debug.LogFormat("切换到{0}", info.gameObject.name);
-        var old = Brain.ActiveVirtualCamera;
-        if (CurrentInfo == info) return;
-        if (CurrentInfo != null)
-        {
-            CurrentInfo?.Leave();  //执行上一个相机离开事件
-        }
-        float time;
-        if (CurrentInfo == info)
-        {
-            time = 0;
-        }
-        else
-        {
-            if (Brain.CustomBlends != null)
-            {
-                //Debug.Log($"{old.Name},{info.vc.name},{ brain.m_DefaultBlend}");
-                if (old == null)
-                {
-                    time = 0;
-                }
-                else
-                {
-                    time = _brain.CustomBlends.GetBlendForVirtualCameras(old.Name, info.vc.name, _brain.DefaultBlend).BlendTime;
-                }
-            }
-            else
-            {
-                time = _brain.DefaultBlend.Time;
-            }
-        }
-        Debug.Log($"收到改变相机消息,当前激活相机{old?.Name},上一个:{CurrentInfo},要切换到：{info},时间：{time}", info.gameObject);
-        info.BeginChange(time);
-        if (CurrentInfo != null)
-        {
-            CurrentInfo.vc.Priority = 1;
-        }
-        info.vc.Priority = 100;
-
-        info.ResetCamera(); //重置相机初始位置
-        if (info.changeMoveProperty)
-        {
-            set = info.set;
-        }
-        current = info.vc;
-        CurrentInfo = info;
-        info.ActiveEvent?.Invoke(); //激活事件
-        currentFocus = info.focous == null ? currentFocus : info.focous;
-        canMove = info.canMove;
-        //Debug.Log(currentInfo, currentInfo.gameObject);
+        SwitchCamera(info, true);
     }
 
     public void ChangeCinemachineNotReset(CameraInfo info)
     {
-        //Debug.LogFormat("切换到{0}", info.gameObject.name);
-        var old = Brain.ActiveVirtualCamera;
-        //if (currentInfo == info) return;
+        SwitchCamera(info, false);
+    }
+
+    #region 相机切换辅助方法
+    /// <summary>
+    /// 计算相机切换的混合时间
+    /// </summary>
+    private float CalculateBlendTime(ICinemachineCamera old, CameraInfo info)
+    {
+        if (old == null || CurrentInfo == info)
+        {
+            return 0;
+        }
+
+        if (Brain.CustomBlends != null)
+        {
+            return _brain.CustomBlends.GetBlendForVirtualCameras(old.Name, info.vc.name, _brain.DefaultBlend).BlendTime;
+        }
+        else
+        {
+            return _brain.DefaultBlend.Time;
+        }
+    }
+
+    /// <summary>
+    /// 切换相机的公共逻辑
+    /// </summary>
+    private void SwitchCamera(CameraInfo info, bool resetCamera)
+    {
         if (focusCor != null)
         {
             StopCoroutine(focusCor);
         }
+
+        if (!info.IsInit) info.Init();
+        
+        var old = Brain.ActiveVirtualCamera;
+        if (CurrentInfo == info && resetCamera) return;
+
         CurrentInfo?.Leave();  //执行上一个相机离开事件
-        float time;
-        if (CurrentInfo == info)
-        {
-            time = 0;
-        }
-        else
-        {
-            if (Brain.CustomBlends != null)
-            {
-                //Debug.Log($"{old.Name},{info.vc.name},{ brain.m_DefaultBlend}");
-                if (old == null)
-                {
-                    time = 0;
-                }
-                else
-                {
-                    time = _brain.CustomBlends.GetBlendForVirtualCameras(old.Name, info.vc.name, _brain.DefaultBlend).BlendTime;
-                }
-            }
-            else
-            {
-                time = _brain.DefaultBlend.Time;
-            }
-        }
+
+        float time = CalculateBlendTime(old, info);
+        
         Debug.Log($"收到改变相机消息,当前激活相机{old?.Name},上一个:{CurrentInfo},要切换到：{info},时间：{time}", info.gameObject);
+        
         info.BeginChange(time);
+        
         if (CurrentInfo != null)
         {
             CurrentInfo.vc.Priority = 1;
         }
         info.vc.Priority = 100;
-        //    info.ResetCamera(); //重置相机初始位置
+
+        if (resetCamera)
+        {
+            info.ResetCamera(); //重置相机初始位置
+        }
+
         if (info.changeMoveProperty)
         {
             set = info.set;
         }
+        
         current = info.vc;
         CurrentInfo = info;
         info.ActiveEvent?.Invoke(); //激活事件
         currentFocus = info.focous == null ? currentFocus : info.focous;
         canMove = info.canMove;
     }
+    #endregion
     private CameraInfo _currentInfo;
     [ReadOnly,ShowInInspector]
     private CinemachineVirtualCameraBase current;
@@ -285,174 +251,207 @@ public class CameraController : MonoBehaviour
 
     private void LateUpdate()
     {
-        //   Debug.Log($"主相机:{Camera.main.transform.position}");
-        if (canMove)
+        if (!canMove) return;
+
+        UpdateCameraMovement();
+        UpdateUIClickState();
+        
+        if (clickIsOnUI) return;
+
+#if UNITY_STANDALONE_WIN || UNITY_EDITOR
+        if (Input.touchCount == 0)
         {
-            invokeMoveEvent = false;
-            if (Mathf.Abs(RotateX) > 0.01f)
+            HandleMouseInput();
+        }
+#endif
+        HandleTouchInput();
+    }
+
+    #region 输入处理
+    /// <summary>
+    /// 更新相机移动
+    /// </summary>
+    private void UpdateCameraMovement()
+    {
+        invokeMoveEvent = false;
+        
+        if (Mathf.Abs(RotateX) > 0.01f)
+        {
+            RotateCameraX(current.transform, RotateX * set.rotateSpeed, currentFocus);
+            _deltaX = Mathf.Lerp(_deltaX, 0, set.rotateDamping * Time.deltaTime);
+            invokeMoveEvent = true;
+        }
+        
+        if (Mathf.Abs(RotateY) > 0.01f)
+        {
+            RotateCameraY(current.transform, RotateY * set.rotateSpeed, currentFocus);
+            _deltaY = Mathf.Lerp(_deltaY, 0, set.rotateDamping * Time.deltaTime);
+            invokeMoveEvent = true;
+        }
+        
+        if (needMove)
+        {
+            var pos = Vector3.SmoothDamp(current.transform.position, moveTarget, ref velocity, set.moveSmoothTime);
+            if ((moveTarget - pos).sqrMagnitude < 0.02f)
             {
-                RotateCameraX(current.transform, RotateX * set.rotateSpeed, currentFocus);
-                _deltaX = Mathf.Lerp(_deltaX, 0, set.rotateDamping * Time.deltaTime);
-                invokeMoveEvent = true;
+                needMove = false;
             }
-            if (Mathf.Abs(RotateY) > 0.01f)
+            else
             {
-                RotateCameraY(current.transform, RotateY * set.rotateSpeed, currentFocus);
-                _deltaY = Mathf.Lerp(_deltaY, 0, set.rotateDamping * Time.deltaTime);
-                invokeMoveEvent = true;
+                current.transform.position = pos;
             }
-            if (needMove)
+            invokeMoveEvent = true;
+        }
+        
+        if (invokeMoveEvent)
+        {
+            OnMove?.Invoke();
+            if (focusCor != null)
             {
-                var pos = Vector3.SmoothDamp(current.transform.position, moveTarget, ref velocity, set.moveSmoothTime);
-                if ((moveTarget - pos).sqrMagnitude < 0.02f)
-                {
-                    needMove = false;
-                }
-                else
-                {
-                    current.transform.position = pos;
-                }
-                invokeMoveEvent = true;
+                StopCoroutine(focusCor);
+                focusCor = null;
             }
-            if (invokeMoveEvent)
+        }
+    }
+
+    /// <summary>
+    /// 更新 UI 点击状态
+    /// </summary>
+    private void UpdateUIClickState()
+    {
+        if (_eventSystem == null) _eventSystem = EventSystem.current;
+        
+        if (Input.GetMouseButtonDown(0))
+        {
+            if (_eventSystem.IsPointerOverGameObject())
             {
-                OnMove?.Invoke();
-                if (focusCor != null)
-                {
-                    StopCoroutine(focusCor);
-                    focusCor = null;
-                }
+                clickIsOnUI = true;
             }
-            //判断点击按下的时候是否在UI上
-            if (Input.GetMouseButtonDown(0) /*|| Input.GetMouseButtonDown(1)*/)
+        }
+        
+        if (Input.GetMouseButtonUp(0) || Input.GetMouseButtonUp(1))
+        {
+            clickIsOnUI = false;
+            doubleClick = false;
+        }
+        
+        if (Input.touchCount > 0)
+        {
+            var touch = Input.GetTouch(0);
+            if (touch.phase == TouchPhase.Began)
             {
-                if (EventSystem.current.IsPointerOverGameObject())
+                if (_eventSystem.IsPointerOverGameObject(touch.fingerId))
                 {
                     clickIsOnUI = true;
                 }
             }
-            if (Input.GetMouseButtonUp(0) || Input.GetMouseButtonUp(1))
+            else if (touch.phase == TouchPhase.Ended)
             {
                 clickIsOnUI = false;
-                doubleClick = false;
             }
-            if (Input.touchCount > 0)
-            {
-                if (Input.GetTouch(0).phase == TouchPhase.Began)
-                {
-                    if (EventSystem.current.IsPointerOverGameObject(Input.GetTouch(0).fingerId))
-                    {
-                        clickIsOnUI = true;
-                    }
-                }
-                else
-                {
-                    if (Input.GetTouch(0).phase == TouchPhase.Ended)
-                    {
-                        clickIsOnUI = false;
-                    }
-                }
-            }
-            if (clickIsOnUI)
-            {
-                return;
-            }
-            #region 获取输入
-#if UNITY_STANDALONE_WIN || UNITY_EDITOR
-            if (Input.touchCount == 0)
-            {
-                if (Input.GetMouseButtonDown(0))
-                {
-                    //初始化点击位置 和点击时间
-                    var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                    currentFocus.position = GetIntersectWithLineAndPlane(current.transform.position, ray.direction, Vector3.up, groudPostion);
-                    var clickTime = Time.realtimeSinceStartup;
-                    if (clickTime - lastClickTime <= 0.2)
-                    {
-                        //双击传送
-                        doubleClick = true;
-                        var pos = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10));
-                        var dic = (pos - Camera.main.transform.position).normalized;
-                        var jd = GetIntersectWithLineAndPlane(pos, dic, Vector3.up, groudPostion);
-                        if (focusCor != null)
-                        {
-                            StopCoroutine(focusCor);
-                        }
-                        Focus(jd, set.focusTime, set.focusDistance, null);
-                    }
-                    lastClickTime = clickTime;
-                }
-                //右键旋转
-                if (Input.GetMouseButtonDown(1))
-                {
-                    currentFocus.position = GetIntersectWithLineAndPlane(current.transform.position, current.transform.forward, Vector3.up, groudPostion);
-                    needMove = false;
-                }
-                //左键按住位移
-                if (Input.GetMouseButton(0) && !doubleClick)
-                {
-                    var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                    //moveTarget = MeshUtility.GetIntersectWithLineAndPlane(currentFocus.position, -ray.direction, Camera.main.transform.forward, Camera.main.transform.position);
-                    moveTarget = GetIntersectWithLineAndPlane(currentFocus.position, -ray.direction, Camera.main.transform.forward, Camera.main.transform.position);
-                    moveTarget = ClampPos(moveTarget);
-                    needMove = true;
-                }
-                if (Input.GetMouseButton(1))
-                {
-                    RotateX = Input.GetAxis("Mouse X");
-                    //    Debug.Log(Input.GetAxis("Mouse X"));
-                    _deltaX = Mathf.Clamp(_deltaX, -10, 10);
-                    //RotateX = ScaleValue(RotateX);
-                    RotateY = Input.GetAxis("Mouse Y");
-                    _deltaY = Mathf.Clamp(_deltaY, -2, 2);
-                    //RotateY = ScaleValue(RotateY);
-                }
-                if (!EventSystem.current.IsPointerOverGameObject())
-                {
-                    MoveCamera(Input.GetAxis("Mouse ScrollWheel"));
-                }
-                else
-                {
-                    MoveCamera(0);
-                }
-            }
-#endif
-            if (Input.touchCount == 1)
-            {
-                var t = Input.touches[0];
-                if (t.phase == TouchPhase.Moved)
-                {
-                    RotateX = t.deltaPosition.x * 0.02f;
-                    RotateY = t.deltaPosition.y * 0.02f;
-                    Debug.Log("touch rotate");
-                }
-                else if (t.phase == TouchPhase.Began)
-                {
-                    currentFocus.position = GetIntersectWithLineAndPlane(current.transform.position, current.transform.forward, Vector3.up, groudPostion);
-                }
-            }
-            else if (Input.touchCount == 2)
-            {
-                var t1 = Input.touches[0];
-                var t2 = Input.touches[1];
-                if (t1.phase == TouchPhase.Began || t2.phase == TouchPhase.Began)
-                {
-                    distance = Vector2.Distance(t1.position, t2.position);
-                }
-                else
-                {
-                    float currentDistance = Vector2.Distance(t1.position, t2.position);
-                    MoveCamera((currentDistance - distance) * 0.0025f);
-                    distance = currentDistance;
-                }
-            }
-            else if (Input.touchCount == 3)
-            {
-                var t = Input.touches[0];
-            }
-            #endregion
         }
     }
+
+    /// <summary>
+    /// 处理鼠标输入
+    /// </summary>
+    private void HandleMouseInput()
+    {
+        if (_mainCamera == null) _mainCamera = Camera.main;
+        if (_eventSystem == null) _eventSystem = EventSystem.current;
+        
+        if (Input.GetMouseButtonDown(0))
+        {
+            //初始化点击位置 和点击时间
+            var ray = _mainCamera.ScreenPointToRay(Input.mousePosition);
+            currentFocus.position = GetIntersectWithLineAndPlane(current.transform.position, ray.direction, Vector3.up, groundPosition);
+            var clickTime = Time.realtimeSinceStartup;
+            if (clickTime - lastClickTime <= 0.2)
+            {
+                //双击传送
+                doubleClick = true;
+                var pos = _mainCamera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10));
+                var dic = (pos - _mainCamera.transform.position).normalized;
+                var jd = GetIntersectWithLineAndPlane(pos, dic, Vector3.up, groundPosition);
+                if (focusCor != null)
+                {
+                    StopCoroutine(focusCor);
+                }
+                Focus(jd, set.focusTime, set.focusDistance, null);
+            }
+            lastClickTime = clickTime;
+        }
+        
+        //右键旋转
+        if (Input.GetMouseButtonDown(1))
+        {
+            currentFocus.position = GetIntersectWithLineAndPlane(current.transform.position, current.transform.forward, Vector3.up, groundPosition);
+            needMove = false;
+        }
+        
+        //左键按住位移
+        if (Input.GetMouseButton(0) && !doubleClick)
+        {
+            var ray = _mainCamera.ScreenPointToRay(Input.mousePosition);
+            moveTarget = GetIntersectWithLineAndPlane(currentFocus.position, -ray.direction, _mainCamera.transform.forward, _mainCamera.transform.position);
+            moveTarget = ClampPos(moveTarget);
+            needMove = true;
+        }
+        
+        if (Input.GetMouseButton(1))
+        {
+            RotateX = Input.GetAxis("Mouse X");
+            _deltaX = Mathf.Clamp(_deltaX, -10, 10);
+            RotateY = Input.GetAxis("Mouse Y");
+            _deltaY = Mathf.Clamp(_deltaY, -2, 2);
+        }
+        
+        if (!_eventSystem.IsPointerOverGameObject())
+        {
+            MoveCamera(Input.GetAxis("Mouse ScrollWheel"));
+        }
+        else
+        {
+            MoveCamera(0);
+        }
+    }
+
+    /// <summary>
+    /// 处理触摸输入
+    /// </summary>
+    private void HandleTouchInput()
+    {
+        if (Input.touchCount == 1)
+        {
+            var t = Input.touches[0];
+            if (t.phase == TouchPhase.Moved)
+            {
+                RotateX = t.deltaPosition.x * 0.02f;
+                RotateY = t.deltaPosition.y * 0.02f;
+                Debug.Log("touch rotate");
+            }
+            else if (t.phase == TouchPhase.Began)
+            {
+                currentFocus.position = GetIntersectWithLineAndPlane(current.transform.position, current.transform.forward, Vector3.up, groundPosition);
+            }
+        }
+        else if (Input.touchCount == 2)
+        {
+            var t1 = Input.touches[0];
+            var t2 = Input.touches[1];
+            if (t1.phase == TouchPhase.Began || t2.phase == TouchPhase.Began)
+            {
+                distance = Vector2.Distance(t1.position, t2.position);
+            }
+            else
+            {
+                float currentDistance = Vector2.Distance(t1.position, t2.position);
+                MoveCamera((currentDistance - distance) * 0.0025f);
+                distance = currentDistance;
+            }
+        }
+    }
+    #endregion
 
 #if UNITY_EDITOR
     private void OnDrawGizmosSelected()
@@ -524,9 +523,18 @@ public class CameraController : MonoBehaviour
         }
 
         // 计算当前相机到焦点的距离
-        float currentDistance = Vector3.Distance(currentFocus.position, Camera.main.transform.position);
+        if (_mainCamera == null) _mainCamera = Camera.main;
+        float currentDistance = Vector3.Distance(currentFocus.position, _mainCamera.transform.position);
 
-        float speedMultiplier = Mathf.Clamp01(currentDistance / set.nearDistanceThreshold);
+        // 使用平方根函数创建更平滑的速度曲线
+        // 归一化距离（以 nearDistanceThreshold 为基准）
+        float normalizedDistance = currentDistance / set.nearDistanceThreshold;
+        
+        // 使用平方根函数计算速度倍数，提供平滑的衰减曲线
+        // 距离越远速度越快，越近速度越慢
+        // 限制最大值为1，超过阈值时不再加速
+        float speedMultiplier = Mathf.Sqrt(Mathf.Clamp(normalizedDistance, 0.01f, 1f));
+        
         //计算最大移动距离  
         var distanceWithCam = currentDistance - set.minDistance;
         if (distanceWithCam < 0)
@@ -538,44 +546,48 @@ public class CameraController : MonoBehaviour
         {
             //计算交点
             needMove = false;
-            currentFocus.position = GetIntersectWithLineAndPlane(current.transform.position, current.transform.forward, Vector3.up, groudPostion);
+            currentFocus.position = GetIntersectWithLineAndPlane(current.transform.position, current.transform.forward, Vector3.up, groundPosition);
 
             if (focusCor != null)
             {
                 StopCoroutine(focusCor);
                 focusCor = null;
             }
-            scrollValue = openScale? value * speedMultiplier:value;
+            scrollValue = openScale ? value * speedMultiplier : value;
         }
         else
         {
             //如果没有输入 逐渐减少位移变量
             if (Mathf.Abs(scrollValue) > 0.002f)
             {
-              
                 scrollValue = Mathf.Lerp(scrollValue, 0, Time.deltaTime * set.forwardDamping);
             }
             else
             {
                 scrollValue = 0;
             }
-
         }
-        //
+        
+        // 计算移动方向和距离
         var dir = currentFocus.position - current.transform.position;
         var moveDic = dir.normalized;
         float moveLength;
+        
         if (openScale)
-        { 
+        {
             // 根据距离动态调整移动速度
-            float adjustSpeed = Mathf.Lerp(
-                minMoveSpeed,
-                set.moveSpeed,
-                speedMultiplier
-            );
-
-         
-            moveLength = scrollValue * adjustSpeed ;
+            // speedMultiplier 已经通过平方根函数计算，范围约为 [0.1, 1]
+            // 当 normalizedDistance = 0.01 时，speedMultiplier ≈ 0.1（最小速度）
+            // 当 normalizedDistance >= 1 时，speedMultiplier = 1（最大速度，不再加速）
+            
+            float minSpeedMultiplier = Mathf.Sqrt(0.01f); // 最小归一化距离对应的速度倍数 ≈ 0.1
+            float maxSpeedMultiplier = 1f; // 最大速度倍数（对应 nearDistanceThreshold）
+            
+            // 将 speedMultiplier 映射到速度范围 [minMoveSpeed, set.moveSpeed]
+            float t = (speedMultiplier - minSpeedMultiplier) / (maxSpeedMultiplier - minSpeedMultiplier);
+            float adjustSpeed = Mathf.Lerp(minMoveSpeed, set.moveSpeed, Mathf.Clamp01(t));
+            
+            moveLength = scrollValue * adjustSpeed;
         }
         else
         {
@@ -744,7 +756,8 @@ public class CameraController : MonoBehaviour
     {
         if (rayType == 1)
         {
-            if (Physics.Raycast(point, direct, out RaycastHit raycast, float.MaxValue, 1 << LayerMask.NameToLayer("Ground")))
+            if (_groundLayer == -1) _groundLayer = LayerMask.NameToLayer("Ground");
+            if (Physics.Raycast(point, direct, out RaycastHit raycast, float.MaxValue, 1 << _groundLayer))
             {
                 return raycast.point;
             }
@@ -754,7 +767,8 @@ public class CameraController : MonoBehaviour
 
     public bool IsPointInCameraView(Vector3 point)
     {
-        Vector3 viewportPoint = Camera.main.WorldToViewportPoint(point);
+        if (_mainCamera == null) _mainCamera = Camera.main;
+        Vector3 viewportPoint = _mainCamera.WorldToViewportPoint(point);
         // 检查视口坐标是否在[0,1]范围内
         bool inViewport = viewportPoint.x >= 0 && viewportPoint.x <= 1 &&
                           viewportPoint.y >= 0 && viewportPoint.y <= 1;

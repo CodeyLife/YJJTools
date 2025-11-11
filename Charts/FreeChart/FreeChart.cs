@@ -93,10 +93,13 @@ public class FreeChart : ChartBase
                     }
                 }
             }
-            set.rulerSet[0].SetMaxValue(Yjj_ChartUtility.GetMaxData(left), set);
-            set.rulerSet[0].min = Yjj_ChartUtility.GetMinData(left);
-            set.rulerSet[1].SetMaxValue(Yjj_ChartUtility.GetMaxData(right), set);
-            set.rulerSet[1].min = Yjj_ChartUtility.GetMinData(right);
+            var maxMin = Yjj_ChartUtility.ComputeMaxAndMin(left);
+            set.rulerSet[0].SetMaxValue(maxMin.maxValue, set);
+            set.rulerSet[0].min = maxMin.minValue;
+            maxMin = Yjj_ChartUtility.ComputeMaxAndMin(right);
+            set.rulerSet[1].SetMaxValue(maxMin.maxValue, set);
+            set.rulerSet[1].min = maxMin.minValue;
+
         }
         else
         {

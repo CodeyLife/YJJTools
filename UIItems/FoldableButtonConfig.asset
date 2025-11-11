@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2fb02860897b3b8459778ffcbe6e1877, type: 3}
+  m_Name: FoldableButtonConfig
+  m_EditorClassIdentifier: 
+  buttonPrefab: {fileID: 5420082715666386523, guid: 00cdd491afe13fe4a9c4ec972d0fa1fa,
+    type: 3}
+  expandSprite: {fileID: 21300064, guid: 652f9002291e2514e9e6d4569cec7bcc, type: 3}
+  collapseSprite: {fileID: 21300058, guid: 652f9002291e2514e9e6d4569cec7bcc, type: 3}
+  buttonWidth: 260.37
+  buttonHeight: 34.55
+  buttonSpacing: 7.3
+  levelIndent: 20
+  heightAdjustAnimationTime: 0.2
+  useAnimation: 1
+  adjustOtherButtonHeight: 1
+  selectedButtonHeightMultiplier: 1
+  otherButtonHeightMultiplier: 0.8

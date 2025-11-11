@@ -178,7 +178,8 @@ namespace YJJTool
         }
         public void SetLineValue()
         {
-            max = Yjj_ChartUtility.GetMaxData(datas.Max());
+            var clamp = Yjj_ChartUtility.ComputeMaxAndMin(datas);
+            max = (int)clamp.maxValue;
             Line.width = line_width;
             Line.datas = datas;
             Line.radius = radius;

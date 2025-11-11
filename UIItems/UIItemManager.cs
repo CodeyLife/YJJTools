@@ -249,7 +249,7 @@ public class UIItemManager : MonoBehaviour
             var content = root.GetChild(0).GetComponent<ButtonGroupContent>();
             if (content != null)
             {
-                content.initializationMode = ButtonInitializationMode.InitializeWithEvent;
+                content.initializationMode = ButtonInitializationMode.StartSelectedAndExecute;
               //  content.initNotInvokeEvent = !invokeEventOnEnable;
             }
         }

@@ -1283,169 +1283,140 @@ namespace YJJTool
 
         #endregion
         #region 获取最大最小值
-        public static int GetMaxData(List<float> datas)
+        public static (float maxValue, float minValue) ComputeMaxAndMin(List<MultipleData> datas)
         {
-            float value = datas.Max();
-            int ceil = Mathf.CeilToInt(value);
-            string str = ceil.ToString();
-            int max = (int)Mathf.Pow(10, str.Length - 1);
-            max = Mathf.CeilToInt(ceil / (float)max) * max;
-            max = max == 0 ? 1 : max;
-            return max;
-        }
-        public static int GetMaxData(float value)
-        {
-            int ceil = Mathf.CeilToInt(value);
-            string str = ceil.ToString();
-            int max = (int)Mathf.Pow(10, str.Length - 1);
-            max = Mathf.CeilToInt(ceil / (float)max) * max;
-            return max;
-        }
-        public static int GetMinData(List<float> datas)
-        {
-            float value = 0;
-            for (int i = 0; i < datas.Count; i++)
-            {
-                if (datas[i] < value)
-                {
-                    value = datas[i];
-                }
-            }
-            int ceil = Mathf.CeilToInt(value);
-            ceil = Mathf.Abs(ceil);
-            string str = ceil.ToString();
-            int min = (int)Mathf.Pow(10, str.Length - 1);
-            min = Mathf.CeilToInt(ceil / (float)min) * min;
-            min = value < 0 ? min * -1 : min;
-            return min;
-        }
-        public static int GetMaxData(List<MultipleData> datas)
-        {
-            float value = 0;
-            for (int i = 0; i < datas.Count; i++)
-            {
-                for (int j = 0; j < datas[i].datas.Count; j++)
-                    if (datas[i].datas[j] > value)
-                    {
-                        value = datas[i].datas[j];
-                    }
-            }
-            int ceil = Mathf.CeilToInt(value);
-            string str = ceil.ToString();
-            int max = (int)Mathf.Pow(10, str.Length - 1);
-            max = Mathf.CeilToInt(ceil / (float)max) * max;
-            return max;
-        }
-        public static int GetMinData(List<MultipleData> datas)
-        {
-            float value = 0;
-            for (int i = 0; i < datas.Count; i++)
-            {
-                for (int j = 0; j < datas[i].datas.Count; j++)
-                    if (datas[i].datas[j] < value)
-                    {
-                        value = datas[i].datas[j];
-                    }
-            }
-            int ceil = Mathf.CeilToInt(value);
-            ceil = Mathf.Abs(ceil);
-            string str = ceil.ToString();
-            int min = (int)Mathf.Pow(10, str.Length - 1);
-            min = Mathf.CeilToInt(ceil / (float)min) * min;
-            min = value < 0 ? min * -1 : min;
-            return min;
-        }
-        /// <summary>
-        /// 返回最大最小值数组，数组0为最小值，数组1为最大值
-        /// </summary>
-        /// <param name="datas"></param>
-        /// <returns></returns>
-        public static int[] GetMaxAndMinData(List<float> datas)
-        {
-            float maxValue = float.MinValue;
+            float maxValue = 0;
             float minValue = float.MaxValue;
+            // 获取实际数据范围
             for (int i = 0; i < datas.Count; i++)
             {
-                if (datas[i] > maxValue)
+                for (int j = 0; j < datas[i].datas.Count; j++)
                 {
-                    maxValue = datas[i];
-                }
-                if (datas[i] < minValue)
-                {
-                    minValue = datas[i];
+                    var current = datas[i].datas[j];
+                    maxValue = Mathf.Max(maxValue, current);
+                    minValue = Mathf.Min(minValue, current);
                 }
             }
-            int ceil = Mathf.CeilToInt(maxValue);
-            string str = ceil.ToString();
-            int max = (int)Mathf.Pow(10, str.Length - 1);
-            max = Mathf.CeilToInt(ceil / (float)max) * max;
-            ceil = Mathf.FloorToInt(minValue);
-            ceil = Mathf.Abs(ceil);
-            str = ceil.ToString();
-            int min = (int)Mathf.Pow(10, str.Length - 1);
-            min = Mathf.FloorToInt(ceil / (float)min) * min;
-            min = minValue < 0 ? min * -1 : min;
-            //Debug.Log($"{minValue}:{min}");
-            return new int[] { min, max };
+
+            // 处理所有数据相同的情况
+            if (Mathf.Approximately(maxValue, minValue))
+            {
+                if (maxValue == 0)
+                {
+                    maxValue = 1;
+                    minValue = 0;
+                }
+                else
+                {
+                    float magnitude = Mathf.Pow(10, Mathf.Floor(Mathf.Log10(Mathf.Abs(maxValue))));
+                    maxValue += magnitude;
+                    minValue -= magnitude;
+                    minValue = Mathf.Max(minValue, 0); // 确保最小值不为负数
+                }
+            }
+
+            // 计算美观的刻度范围
+            CalculateNiceScale(ref minValue, ref maxValue);
+            return (maxValue, minValue);
         }
-        /// <summary>
-        /// 传入set，自动设置最大最小值
-        /// </summary>
-        /// <param name="set"></param>
-        /// <param name="datas"></param>
-        public static void SetMaxAndMinData(BaseSet set, List<MultipleData> datas)
+        public static (float maxValue,float minValue) ComputeMaxAndMin(List<float> datas)
         {
-            if (datas.Count < set.rulerSet.Count)
+            float maxValue = 0;
+            var minValue = float.MaxValue;
+            for (int i = 0; i < datas.Count; i++)
             {
-                Debug.LogError("数据太少");
-                return;
+                var current = datas[i];
+                maxValue = Mathf.Max(maxValue, current);
+                minValue = Mathf.Min(minValue, current);
             }
-            if (set.rulerSet.Count == 1)
+            // 处理所有数据相同的情况
+            if (Mathf.Approximately(maxValue, minValue))
             {
-                if (set.rulerSet[0].autoSetMinValue)
+                if (maxValue == 0)
                 {
-                    var arr = GetMaxAndMinData(datas[0].datas);
-                    var arr2 = GetMaxAndMinData(datas[1].datas);
-                    arr[0] = arr[0] < arr2[0] ? arr[0] : arr2[0];
-                    arr[1] = arr[1] > arr2[1] ? arr[1] : arr2[1];
-                    set.rulerSet[0].SetMaxValue(arr[1], set);
-                    set.rulerSet[0].min = arr[0];
+                    maxValue = 1;
+                    minValue = 0;
                 }
                 else
                 {
-                    int max = 0;
-                    for (int i = 0; i < datas.Count; i++)
-                    {
-                        var tempMax = GetMaxData(datas[i].datas);
-                        max = max > tempMax ? max : tempMax;
-                    }
-                    set.rulerSet[0].SetMaxValue(max, set);
+                    float magnitude = Mathf.Pow(10, Mathf.Floor(Mathf.Log10(Mathf.Abs(maxValue))));
+                    maxValue += magnitude;
+                    minValue -= magnitude;
+                    minValue = Mathf.Max(minValue, 0); // 确保最小值不为负数
                 }
             }
-            else
-            {
-                if (set.rulerSet[0].autoSetMinValue)
-                {
-                    var arr = GetMaxAndMinData(datas[0].datas);
-                    set.rulerSet[0].SetMaxValue(arr[1], set);
-                    set.rulerSet[0].min = arr[0];
-                }
-                else
-                {
-                    set.rulerSet[0].SetMaxValue(GetMaxData(datas[0].datas), set);
-                }
-                if (set.rulerSet[1].autoSetMinValue)
-                {
-                    var arr = GetMaxAndMinData(datas[1].datas);
-                    set.rulerSet[1].SetMaxValue(arr[1], set);
-                    set.rulerSet[1].min = arr[0];
-                }
-                else
-                {
-                    set.rulerSet[1].SetMaxValue(GetMaxData(datas[1].datas), set);
-                }
-            }
+            // 计算美观的刻度范围
+            CalculateNiceScale(ref minValue, ref maxValue);
+            return (maxValue, minValue);
         }
+
+        private static void CalculateNiceScale(ref float minVal, ref float maxVal)
+        {
+            float range = maxVal - minVal;
+            if (range <= 0) range = Mathf.Abs(maxVal);
+
+            // 计算数量级和调整系数
+            float exponent = Mathf.Floor(Mathf.Log10(range));
+            if (float.IsInfinity(exponent)) exponent = 0;
+
+            float fraction = range / Mathf.Pow(10f, exponent);
+            float niceFraction = GetNiceFraction(fraction);
+
+            float niceRange = niceFraction * Mathf.Pow(10f, exponent);
+            float tickInterval = GetNiceTickInterval(niceRange);
+
+            // 调整范围边界
+            float newMin = Mathf.Floor(minVal / tickInterval) * tickInterval;
+            float newMax = Mathf.Ceil(maxVal / tickInterval) * tickInterval;
+
+            // 确保范围有效性
+            if (newMax <= newMin)
+            {
+                newMax = newMin + tickInterval;
+            }
+
+            // 对小数值进行精度修正
+            if (tickInterval < 1)
+            {
+                int decimalPlaces = Mathf.Clamp((int)(-Mathf.Log10(tickInterval)) + 1, 1, 5);
+                newMin = (float)Math.Round(newMin, decimalPlaces);
+                newMax = (float)Math.Round(newMax, decimalPlaces);
+            }
+
+            minVal = newMin;
+            maxVal = newMax;
+        }
+        private static float GetNiceFraction(float fraction)
+        {
+            if (fraction <= 1) return 1;
+            if (fraction <= 2) return 2;
+            if (fraction <= 5) return 5;
+            return 10;
+        }
+        private static float GetNiceTickInterval(float range)
+        {
+            // 根据范围自动确定间隔数量（4-6个刻度）
+            int targetTicks = 5;
+            float rawInterval = range / targetTicks;
+
+            // 计算美化的间隔
+            float exponent = Mathf.Floor(Mathf.Log10(rawInterval));
+            float fraction = rawInterval / Mathf.Pow(10f, exponent);
+
+            // 选择最接近的标准间隔系数
+            float[] validFractions = { 0.1f, 0.2f, 0.5f, 1f, 2f, 5f, 10f };
+            float closest = validFractions[0];
+            foreach (float f in validFractions)
+            {
+                if (Mathf.Abs(f - fraction) < Mathf.Abs(closest - fraction))
+                {
+                    closest = f;
+                }
+            }
+
+            return closest * Mathf.Pow(10f, exponent);
+        }
+
         #endregion
         #region 获取曲线方法
 

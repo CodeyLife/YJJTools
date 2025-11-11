@@ -30,6 +30,7 @@ MonoBehaviour:
   - {r: 0.9528302, g: 0.24017687, b: 0, a: 1}
   - {r: 0, g: 1, b: 0.11066747, a: 1}
   - {r: 0.4433962, g: 0.35314646, b: 0, a: 1}
+  seriesNames: []
   openAnimation: 1
   fadeInTime: 2
   curve:

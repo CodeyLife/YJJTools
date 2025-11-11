@@ -160,10 +160,10 @@ namespace YJJTool
                     .OnUpdate(() => SetGraph());
 #else
              StopAllCoroutines();
-                StartCoroutine(YjjUtility.FadeIn(animationTime, (t) =>
+                StartCoroutine(YjjUtility.FadeIn(animationValue, (t) =>
                 {
                     animationValue = t;
-                    SetVerticesDirty();
+                    SetGraph();
                 }));
 #endif
 

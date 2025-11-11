@@ -137,15 +137,16 @@ public class ChartBase : MonoBehaviour
     {
         for(int i = 0; i < set.rulerSet.Count; i++)
         {
+            var arr = Yjj_ChartUtility.ComputeMaxAndMin(data);
             if (set.rulerSet[i].autoSetMinValue)
             {
-                var arr = Yjj_ChartUtility.GetMaxAndMinData(data);
-                set.rulerSet[i].min = arr[0];
-                set.rulerSet[i].SetMaxValue(arr[1], set);
+               
+                set.rulerSet[i].min = arr.minValue;
+                set.rulerSet[i].SetMaxValue(arr.maxValue, set);
             }
             else
             {
-                set.rulerSet[i].SetMaxValue(Yjj_ChartUtility.GetMaxData(data), set);
+                set.rulerSet[i].SetMaxValue(arr.maxValue, set);
             }
         }
     }
@@ -161,15 +162,16 @@ public class ChartBase : MonoBehaviour
         {
             for (int i = 0; i < count; i++)
             {
+                var arr = Yjj_ChartUtility.ComputeMaxAndMin(data[i].datas);
                 if (set.rulerSet[i].autoSetMinValue)
                 {
-                    var arr = Yjj_ChartUtility.GetMaxAndMinData(data[i].datas);
-                    set.rulerSet[i].min = arr[0];
-                    set.rulerSet[i].SetMaxValue(arr[1], set);
+                   
+                    set.rulerSet[i].min = arr.minValue;
+                    set.rulerSet[i].SetMaxValue(arr.maxValue, set);
                 }
                 else
                 {
-                    set.rulerSet[i].SetMaxValue(Yjj_ChartUtility.GetMaxData(data[i].datas), set);
+                    set.rulerSet[i].SetMaxValue(arr.maxValue, set);
                     if(set.rulerSet[i].max == 0)
                     {
                         set.rulerSet[i].SetMaxValue(set.rulerSet[i].zero2Max, set);
@@ -184,21 +186,19 @@ public class ChartBase : MonoBehaviour
             {
                 for (int i = 0; i < data.Count; i++)
                 {
-                    var arr = Yjj_ChartUtility.GetMaxAndMinData(data[i].datas);
-                    min = arr[0] < min ? arr[0] : min;
-                    max = arr[1] > max ? arr[1] : max;
+                    var arr = Yjj_ChartUtility.ComputeMaxAndMin(data[i].datas);
+                    int minValue = (int)arr.minValue;
+                    int maxValue = (int)arr.maxValue;
+                    min = minValue < min  ? minValue : min;
+                    max = maxValue  > max ? maxValue : max;
                 }
                 set.rulerSet[0].min = min;
                 set.rulerSet[0].SetMaxValue(max, set);
             }
             else
             {
-                for (int i = 0; i < data.Count; i++)
-                {
-                    var temMax = Yjj_ChartUtility.GetMaxData(data[i].datas);
-                    max = temMax > max ? temMax : max;
-                }
-                set.rulerSet[0].SetMaxValue(max, set);
+                var arr = Yjj_ChartUtility.ComputeMaxAndMin(data);
+                set.rulerSet[0].SetMaxValue(arr.maxValue, set);
                 if (set.rulerSet[0].max == 0)
                 {
                     set.rulerSet[0].SetMaxValue(set.rulerSet[0].zero2Max, set);

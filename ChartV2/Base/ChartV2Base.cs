@@ -9,6 +9,7 @@ using Sirenix.Utilities;
 using System.Linq;
 using System;
 using TMPro;
+using YJJTool;
 
 [RequireComponent(typeof(Image))]
 public class ChartV2Base : MonoBehaviour, IPointerEnterHandler, IPointerMoveHandler, IDragHandler, IPointerExitHandler, IScrollHandler
@@ -488,114 +489,13 @@ public class ChartV2Base : MonoBehaviour, IPointerEnterHandler, IPointerMoveHand
     public void ComputeMaxAndMin()
     {
         if (_haveMaxAndMin) return;
-        float maxValue = 0;
-        float minValue = float.MaxValue;
         if (set.autoMin || set.autoMax)
         {
-            // 获取实际数据范围
-            for (int i = 0; i < datas.Count; i++)
-            {
-                for (int j = 0; j < datas[i].datas.Count; j++)
-                {
-                    var current = datas[i].datas[j];
-                    maxValue = Mathf.Max(maxValue, current);
-                    minValue = Mathf.Min(minValue, current);
-                }
-            }
-
-            // 处理所有数据相同的情况
-            if (Mathf.Approximately(maxValue, minValue))
-            {
-                if (maxValue == 0)
-                {
-                    maxValue = 1;
-                    minValue = 0;
-                }
-                else
-                {
-                    float magnitude = Mathf.Pow(10, Mathf.Floor(Mathf.Log10(Mathf.Abs(maxValue))));
-                    maxValue += magnitude;
-                    minValue -= magnitude;
-                    minValue = Mathf.Max(minValue, 0); // 确保最小值不为负数
-                }
-            }
-
-            // 计算美观的刻度范围
-            CalculateNiceScale(ref minValue, ref maxValue);
+            var (maxValue, minValue) = Yjj_ChartUtility.ComputeMaxAndMin(datas);
+            max = set.autoMax ? maxValue : set.max;
+            min = set.autoMin ? minValue : set.min;
         }
-
-        max = set.autoMax ? maxValue : set.max;
-        min = set.autoMin ? minValue : set.min;
         _haveMaxAndMin = true;
-    }
-
-    private void CalculateNiceScale(ref float minVal, ref float maxVal)
-    {
-        float range = maxVal - minVal;
-        if (range <= 0) range = Mathf.Abs(maxVal);
-
-        // 计算数量级和调整系数
-        float exponent = Mathf.Floor(Mathf.Log10(range));
-        if (float.IsInfinity(exponent)) exponent = 0;
-
-        float fraction = range / Mathf.Pow(10f, exponent);
-        float niceFraction = GetNiceFraction(fraction);
-
-        float niceRange = niceFraction * Mathf.Pow(10f, exponent);
-        float tickInterval = GetNiceTickInterval(niceRange);
-
-        // 调整范围边界
-        float newMin = Mathf.Floor(minVal / tickInterval) * tickInterval;
-        float newMax = Mathf.Ceil(maxVal / tickInterval) * tickInterval;
-
-        // 确保范围有效性
-        if (newMax <= newMin)
-        {
-            newMax = newMin + tickInterval;
-        }
-
-        // 对小数值进行精度修正
-        if (tickInterval < 1)
-        {
-            int decimalPlaces = Mathf.Clamp((int)(-Mathf.Log10(tickInterval)) + 1, 1, 5);
-            newMin = (float)Math.Round(newMin, decimalPlaces);
-            newMax = (float)Math.Round(newMax, decimalPlaces);
-        }
-
-        minVal = newMin;
-        maxVal = newMax;
-    }
-
-    private float GetNiceFraction(float fraction)
-    {
-        if (fraction <= 1) return 1;
-        if (fraction <= 2) return 2;
-        if (fraction <= 5) return 5;
-        return 10;
-    }
-
-    private float GetNiceTickInterval(float range)
-    {
-        // 根据范围自动确定间隔数量（4-6个刻度）
-        int targetTicks = 5;
-        float rawInterval = range / targetTicks;
-
-        // 计算美化的间隔
-        float exponent = Mathf.Floor(Mathf.Log10(rawInterval));
-        float fraction = rawInterval / Mathf.Pow(10f, exponent);
-
-        // 选择最接近的标准间隔系数
-        float[] validFractions = { 0.1f, 0.2f, 0.5f, 1f, 2f, 5f, 10f };
-        float closest = validFractions[0];
-        foreach (float f in validFractions)
-        {
-            if (Mathf.Abs(f - fraction) < Mathf.Abs(closest - fraction))
-            {
-                closest = f;
-            }
-        }
-
-        return closest * Mathf.Pow(10f, exponent);
     }
 
     /// <summary>

@@ -102,7 +102,7 @@ namespace YJJTool
             //#endif
             //  Debug.Log(string.Format("宽:{0},高{1}", width, height));
             float[,] weights = new float[width, height];
-            float max = Yjj_ChartUtility.GetMaxData(dataList);
+            float max = Yjj_ChartUtility.ComputeMaxAndMin(dataList).maxValue;
             foreach (var c in cancels)
             {
                 c.Cancel();

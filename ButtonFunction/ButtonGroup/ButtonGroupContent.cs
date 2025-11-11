@@ -13,16 +13,14 @@ using UnityEngine.UI;
 /// </summary>
 public enum ButtonInitializationMode
 {
-    [LabelText("不初始化 - 按钮保持默认状态")]
-    None,
-    [LabelText("初始化但不触发事件 - 设置为按下状态但不执行点击事件")]
-    InitializeOnly,
-    [LabelText("初始化并触发事件 - 设置为按下状态并执行点击事件")]
-    InitializeWithEvent,
-    [LabelText("每次Enable都重置为未选中状态 - 每次OnEnable时取消选中")]
-    ReinitializeOnEnable,
-    [LabelText("每次Enable都重置为选中状态 - 每次OnEnable时自动选中")]
-    ReinitializeToSelectedOnEnable
+    [LabelText("默认状态 - 不执行任何操作，保持原始状态")]
+    Default,
+    [LabelText("启动时选中 - 游戏开始时自动选中此按钮")]
+    StartSelected,
+    [LabelText("启动时选中并执行 - 游戏开始时选中并执行点击事件")]
+    StartSelectedAndExecute,
+    [LabelText("每次激活时选中 - 每次显示时自动选中")]
+    SelectOnEnable
 }
 
 [AddComponentMenu("_YjjTool/ButtonGroupContent")]
@@ -35,9 +33,9 @@ public class ButtonGroupContent : MonoBehaviour, IPointerEnterHandler,IPointerEx
     [LabelText("切换sprite还原尺寸")]
     public bool needSetNativeSize = false;
     private Sprite oldSprite;
-    [LabelText("改变sprite颜色"),InlineButton("ResetColor")]
+    [LabelText("启用颜色变化 - 按钮状态改变时改变颜色"),InlineButton("ResetColor")]
     public bool changeColor = false;
-    [ShowIf("changeColor"),OnValueChanged("@SetUnClickColorInEditor(unClickColor)")]
+    [ShowIf("changeColor"),LabelText("未选中颜色"),OnValueChanged("@SetUnClickColorInEditor(unClickColor)")]
     public Color unClickColor = Color.white;
 #if UNITY_EDITOR
     private void SetUnClickColorInEditor(Color c)
@@ -58,8 +56,8 @@ public class ButtonGroupContent : MonoBehaviour, IPointerEnterHandler,IPointerEx
         else
         {
             // 根据初始化模式决定是否激活
-            bool shouldActivate = initializationMode == ButtonInitializationMode.InitializeOnly || 
-                                 initializationMode == ButtonInitializationMode.InitializeWithEvent;
+            bool shouldActivate = initializationMode == ButtonInitializationMode.StartSelected || 
+                                 initializationMode == ButtonInitializationMode.StartSelectedAndExecute;
             clickShow.ForEach(x => x.SetActive(shouldActivate));
         }
     }
@@ -68,27 +66,14 @@ public class ButtonGroupContent : MonoBehaviour, IPointerEnterHandler,IPointerEx
     {
         Image.color = unClickColor;
     }
-    [ShowIf("changeColor"), OnValueChanged("@SetUnClickColorInEditor(hoverColor)")]
+    [ShowIf("changeColor"),LabelText("悬停颜色"), OnValueChanged("@SetUnClickColorInEditor(hoverColor)")]
     public Color hoverColor = Color.white;
-    [ShowIf("changeColor"), OnValueChanged("@SetUnClickColorInEditor(clickColor)")]
+    [ShowIf("changeColor"),LabelText("选中颜色"), OnValueChanged("@SetUnClickColorInEditor(clickColor)")]
     public Color clickColor = Color.white;
     [LabelText("按钮初始化模式")]
-    public ButtonInitializationMode initializationMode = ButtonInitializationMode.None;
+    public ButtonInitializationMode initializationMode = ButtonInitializationMode.Default;
     
-    // 兼容性字段 - 用于处理Unity场景文件中的旧序列化数据
-    [System.Obsolete("请使用initializationMode替代")]
-    [HideInInspector]
-    public bool isStartButton = false;
-    
-    [System.Obsolete("请使用initializationMode替代")]
-    [HideInInspector]
-    public bool invokeEventAtStart = true;
-    
-    [System.Obsolete("请使用initializationMode替代")]
-    [HideInInspector]
-    public bool initAtEnable = false;
-    
-    [LabelText("支持多次点击")]
+    [LabelText("允许重复点击 - 允许点击已选中的按钮")]
     public bool supportMultipleClick = false;
 
     public Sprite hoverSprite;
@@ -102,15 +87,15 @@ public class ButtonGroupContent : MonoBehaviour, IPointerEnterHandler,IPointerEx
     //  public ClickObject clickObject;
     private Image _image;
     #region 显隐控制
-    [LabelText("事件先于显隐")]
+    [LabelText("先执行事件再显示 - 点击时先触发事件再显示/隐藏物体")]
     public bool eventBeforShow = false;
     [Title("激活按钮时显示的物体",TitleAlignment = TitleAlignments.Centered)]
     public List<GameObject> clickShow = new List<GameObject>();
-    [ShowIf("@clickShow.Count>0"),LabelText("按钮取消时隐藏")]
+    [ShowIf("@clickShow.Count>0"),LabelText("取消选中时隐藏 - 按钮取消选中时隐藏显示的物体")]
     public bool cancel2Hide = true;
     [Title("激活按钮时关闭的物体", TitleAlignment = TitleAlignments.Centered)]
     public List<GameObject> clickHide = new List<GameObject>();
-    [ShowIf("@clickHide.Count>0"),LabelText("按钮取消时显示")]
+    [ShowIf("@clickHide.Count>0"),LabelText("取消选中时显示 - 按钮取消选中时显示隐藏的物体")]
     public bool cancel2Show = true;
     #endregion
     #region 事件
@@ -140,8 +125,7 @@ public class ButtonGroupContent : MonoBehaviour, IPointerEnterHandler,IPointerEx
 
     private void Awake()
     {
-        // 迁移旧参数到新枚举
-        MigrateOldParameters();
+
         
         if(buttonGroup == null)
         {
@@ -149,31 +133,6 @@ public class ButtonGroupContent : MonoBehaviour, IPointerEnterHandler,IPointerEx
         }
     }
     
-    /// <summary>
-    /// 迁移旧的布尔参数到新的枚举参数
-    /// </summary>
-    private void MigrateOldParameters()
-    {
-        // 如果initializationMode还是默认值，但旧参数有值，则进行迁移
-        if (initializationMode == ButtonInitializationMode.None)
-        {
-            if (initAtEnable)
-            {
-                initializationMode = ButtonInitializationMode.ReinitializeOnEnable;
-            }
-            else if (isStartButton)
-            {
-                if (invokeEventAtStart)
-                {
-                    initializationMode = ButtonInitializationMode.InitializeWithEvent;
-                }
-                else
-                {
-                    initializationMode = ButtonInitializationMode.InitializeOnly;
-                }
-            }
-        }
-    }
     private void InitButton()
     {
         oldSprite = Image.sprite;
@@ -208,11 +167,13 @@ public class ButtonGroupContent : MonoBehaviour, IPointerEnterHandler,IPointerEx
     }
     private void OnEnable()
     {
-        ExecuteInitialization(initializationMode);
+        // 只有非默认状态才执行初始化
+        if (initializationMode != ButtonInitializationMode.Default)
+        {
+            ExecuteInitialization(initializationMode);
+        }
     }
-    private void Start()
-    {
-    }
+
 
     public bool State { get => buttonGroup.Last == this; }
     
@@ -224,30 +185,23 @@ public class ButtonGroupContent : MonoBehaviour, IPointerEnterHandler,IPointerEx
     {
         switch (mode)
         {
-            case ButtonInitializationMode.None:
-                // 不进行任何初始化
+            case ButtonInitializationMode.Default:
+                // 保持默认状态，不进行任何初始化
                 break;
                 
-            case ButtonInitializationMode.InitializeOnly:
-                // 只设置为按下状态，不触发事件
+            case ButtonInitializationMode.StartSelected:
+                // 启动时选中，不触发事件
                 Change2Click();
                 initEvent?.Invoke();
                 break;
                 
-            case ButtonInitializationMode.InitializeWithEvent:
-                // 设置为按下状态并触发事件
+            case ButtonInitializationMode.StartSelectedAndExecute:
+                // 启动时选中并执行点击事件
                 OnClick(true);
                 break;
-                
-            case ButtonInitializationMode.ReinitializeOnEnable:
-                // 每次Enable都重新初始化（重置为未选中状态）
-                Cancel();
-                ButtonGroup.SetLastClick(null);
-                initEvent?.Invoke();
-                break;
-                
-            case ButtonInitializationMode.ReinitializeToSelectedOnEnable:
-                // 每次Enable都重置为选中状态
+
+            case ButtonInitializationMode.SelectOnEnable:
+                // 每次激活时自动选中
                 Change2Click();
                 initEvent?.Invoke();
                 break;
@@ -325,6 +279,7 @@ public class ButtonGroupContent : MonoBehaviour, IPointerEnterHandler,IPointerEx
         }
         cancelEvent?.Invoke();
         stateEvent?.Invoke(false);
+        buttonGroup.Last = null;
     }
 
     /// <summary>
@@ -332,7 +287,7 @@ public class ButtonGroupContent : MonoBehaviour, IPointerEnterHandler,IPointerEx
     /// </summary>
     public void Change2Click()
     {
-        ButtonGroup.SetLastClick(this);
+        ButtonGroup.Last = this;
         foreach (var go in clickShow)
         {
             if (go == null) continue;

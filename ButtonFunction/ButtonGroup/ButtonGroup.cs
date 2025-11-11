@@ -21,14 +21,21 @@ public class ButtonGroup : MonoBehaviour
 
     public ButtonGroupContent Last { get => last; set
         {
-            if (last != null && value == null)
+            if (last != null)
             {
-                ClearEvent?.Invoke();
-            }
-            if(last == null && value != null)
+                last.Cancel();
+                if(value == null)
+                {
+                    ClearEvent?.Invoke();
+                }
+            }else
             {
-                HaveButtonClickEvent?.Invoke();
+                if (value != null)
+                {
+                    HaveButtonClickEvent?.Invoke();
+                }
             }
+
             last = value;
         }
     }
@@ -40,15 +47,7 @@ public class ButtonGroup : MonoBehaviour
             ClearCurrentButton();
         }
     }
-    public void SetLastClick(ButtonGroupContent content)
-    {
-        if (Last == content) return;
-        if (Last != null)
-        {
-            Last.Cancel();
-        }
-        Last = content;
-    }
+
     public void ClearCurrentButton()
     {
         if (Last != null)
